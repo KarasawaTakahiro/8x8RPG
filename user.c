@@ -112,7 +112,6 @@ static void UpdateLED(void)
     led[0] = print;
     led[1] = print1;
     led[6] = print2;
-    led[2] = ~led[2];
 }
 
 /*
@@ -125,7 +124,7 @@ void initField(){
         if(i==0 || i==FIELD_SZ-1)
             field[i] = 0xffffffff;
         else if(i % 3 == 0)
-            field[i] = 0xc0000001;
+            field[i] = 0x00000000;
         else
             field[i] = 0x80000001;
     }
@@ -147,13 +146,13 @@ uchar searchFront(uchar x, uchar y, uchar dir){
             return ((field[y] & (mask>>1)) >> (FIELD_SZ - (x+2)));
             break;
         case 1:     // 上
-            return ((field[y+1] & mask) >> (FIELD_SZ - x));
+            return ((field[y+1] & mask) >> (FIELD_SZ - (x+1)));
             break;
         case 2:     // 左
             return ((field[y] & (mask<<1)) >> (FIELD_SZ - x));
             break;
         case 3:     // 下
-            return ((field[y-1] & mask) >> (FIELD_SZ - x));
+            return ((field[y-1] & mask) >> (FIELD_SZ - (x+1)));
             break;
     }
 }

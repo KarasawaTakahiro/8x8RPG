@@ -26,7 +26,7 @@ void initField(void);
 void user_init(void)
 {
     gameover = 0;
-    player[0] = 1;
+    player[0] = 10;
     player[1] = 4;
     initField();
 }
@@ -58,8 +58,13 @@ static void MoveBullet(void)
  */
 static void MoveFort(void)
 {
+    // テスト用　左右に移動する
     switch(sw){
         case 1:
+            if(0 < player[0])
+                player[0] --;
+            break;
+        case 2:
             if(player[0] < FIELD_SZ)
                 player[0] ++;
             break;
@@ -71,16 +76,19 @@ static void MoveFort(void)
 static void UpdateLED(void)
 {
     uchar i;
-    ulong mask = 0xff000000;
-    uchar cur = player[0]-3;
+    ulong mask = 0xff000000;    // マスク
+    signed char cur = player[0]-3;  // 左端を基準にする
 
     for(i=0; i<8; i++){
-        led[i] = (uchar)((field[i] & (mask >> cur)) >> (FIELD_SZ-cur-LED_SZ));
-        if(cur < 0)
-            led[i] |= 0xff << (cur * (-1) + 1);
-        else if((FIELD_SZ - LED_SZ) < cur)
+        // ダンジョンの表示
+        led[i] = (uchar)((field[i] & (mask >> cur)) >> (FIELD_SZ-cur-LED_SZ));  // フィールドから8x8LEDに表示する部分を切り取る
+        if(cur < 0)     // フィールドの左端を壁で埋める
+            led[i] |= (0xff << (LED_SZ - (cur * (-1))));
+
+        else if((FIELD_SZ - LED_SZ) < cur)  // フィールドの右端を壁で埋める
             led[i] |= ~(0xff << (cur - (FIELD_SZ-LED_SZ)));
-        led[i] |= 0x20;
+        // ダンジョンの表示　ここまで
+        led[i] |= 0x10; // プレイヤーの位置
     }
 }
 
@@ -90,12 +98,9 @@ static void UpdateLED(void)
 void initField(){
     uchar i;
     for(i=0; i<FIELD_SZ; i++){
-        /*
         if(i==0 || i==FIELD_SZ-1)
             field[i] = 0xffffffff;
         else
             field[i] = 0x80000001;
-         */
-        field[i] = ~0xfffffffe;
     }
 }

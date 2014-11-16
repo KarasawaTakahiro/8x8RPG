@@ -15,12 +15,16 @@ volatile ulong field[FIELD_SZ] = {0};
 volatile uchar player[2];
 volatile uchar direction;
 volatile uchar marker_f;
+volatile uchar print = 0x00;
+volatile uchar print1 = 0x00;
+volatile uchar print2 = 0x00;
 
 // プロトタイプ
 void initField(void);
 void changeDirection(void);
 uchar searchFront(uchar, uchar, uchar);
 void walk(void);
+void showMarker();
 
 /*
     フレームワークから呼ばれる関数群
@@ -63,10 +67,12 @@ static void MoveBullet(void)
 /*
     プレイヤーの移動
  */
-static void MoveFort(void)
-{
+static void MoveFort(void) {
     switch(sw){
         case 1:
+            print = player[0]; //searchFront(player[0], player[1], direction);
+            print1 = player[1]; //
+            print2 = searchFront(player[0], player[1], direction);
             if(searchFront(player[0], player[1], direction) == P)
                 walk();
             break;
@@ -100,21 +106,12 @@ static void UpdateLED(void)
     }
 
     led[3] |= 0x10; // プレイヤーの位置
-    // direction
-    if(marker_f){
-        switch(direction){
-        case 0: led[3] |= 0x08;
-            break;
-        case 1: led[4] |= 0x10;
-            break;
-        case 2: led[3] |= 0x20;
-            break;
-        case 3: led[2] |= 0x10;
-            break;
-        }
-        led[0] = 0xaa;
-        led[1] = direction;
-    }
+    // 方向
+    showMarker();
+
+    led[0] = print;
+    led[1] = print1;
+    led[6] = print2;
 }
 
 /*
@@ -142,17 +139,17 @@ void changeDirection(){
 // 前方のオブジェクトを返す
 // pos, direction
 uchar searchFront(uchar x, uchar y, uchar dir){
-    ulong mask = 0x80000000 >> x;   // マスク
+    ulong mask = (0x80000000 >> x);   // マスク
 
     switch(dir){
         case 0:     // 右の値を返す
-            return ((field[y] & (mask>>1)) >> (FIELD_SZ-(x+1)));
+            return ((field[y] & (mask>>1)) >> (FIELD_SZ-(1-x)));
             break;
         case 1:     // 上
             return ((field[y+1] & mask) >> (FIELD_SZ - x));
             break;
         case 2:     // 左
-            return ((field[y] & (mask<<1)) >> (FIELD_SZ-(x-1)));
+            return ((field[y] & (mask<<1)) >> (FIELD_SZ - x));
             break;
         case 3:     // 下
             return ((field[y-1] & mask) >> (FIELD_SZ - x));
@@ -162,6 +159,7 @@ uchar searchFront(uchar x, uchar y, uchar dir){
 
 /*
     プレイヤーの移動
+    directionに従ってプレイヤーの座標を更新する
 */
 void walk(){
     switch(direction){
@@ -176,3 +174,21 @@ void walk(){
     }
     marker_f = 0;
 }
+
+// プレイヤーの進行方向を示すマーカーを表示する
+void showMarker(){
+    if(marker_f){
+        switch(direction){
+        case 0: led[3] |= 0x08;    // 右
+            break;                      
+        case 1: led[4] |= 0x10;    // 上
+            break;                      
+        case 2: led[3] |= 0x20;    // 左
+            break;                      
+        case 3: led[2] |= 0x10;    // 下
+            break;
+        }
+        led[7] = direction;
+    }
+}
+

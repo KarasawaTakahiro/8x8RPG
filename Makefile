@@ -1,5 +1,5 @@
 PROJECT = rogue-like
-OBJECTS = rogue-like.o
+OBJECTS = rogue-like.o user.o
 
 DEV = /dev/ttyACM0
 #DEV = /dev/ttyS0

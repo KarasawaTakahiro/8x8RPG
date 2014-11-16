@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include "user.h"
+
 
 // ローカル関数
 static void MoveEnemy(void);
@@ -26,7 +26,7 @@ void initField(void);
 void user_init(void)
 {
     gameover = 0;
-    player[0] = 3;
+    player[0] = 1;
     player[1] = 4;
     initField();
 }
@@ -60,7 +60,8 @@ static void MoveFort(void)
 {
     switch(sw){
         case 1:
-            player[0] ++;
+            if(player[0] < FIELD_SZ)
+                player[0] ++;
             break;
     }
 }
@@ -75,6 +76,11 @@ static void UpdateLED(void)
 
     for(i=0; i<8; i++){
         led[i] = (uchar)((field[i] & (mask >> cur)) >> (FIELD_SZ-cur-LED_SZ));
+        if(cur < 0)
+            led[i] |= 0xff << (cur * (-1) + 1);
+        else if((FIELD_SZ - LED_SZ) < cur)
+            led[i] |= ~(0xff << (cur - (FIELD_SZ-LED_SZ)));
+        led[i] |= 0x20;
     }
 }
 
@@ -90,6 +96,6 @@ void initField(){
         else
             field[i] = 0x80000001;
          */
-        field[i] = 0x89ABCDEF;
+        field[i] = ~0xfffffffe;
     }
 }

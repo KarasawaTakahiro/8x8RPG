@@ -35,7 +35,7 @@ void showMarker();
 void user_init(void)
 {
     gameover = 0;
-    player[0] = 2;
+    player[0] = 29;
     player[1] = 4;
     direction = 0;
     marker_f = 1;
@@ -112,6 +112,7 @@ static void UpdateLED(void)
     led[0] = print;
     led[1] = print1;
     led[6] = print2;
+    led[2] = ~led[2];
 }
 
 /*
@@ -143,7 +144,7 @@ uchar searchFront(uchar x, uchar y, uchar dir){
 
     switch(dir){
         case 0:     // 右の値を返す
-            return ((field[y] & (mask>>1)) >> (FIELD_SZ-(1-x)));
+            return ((field[y] & (mask>>1)) >> (FIELD_SZ - (x+2)));
             break;
         case 1:     // 上
             return ((field[y+1] & mask) >> (FIELD_SZ - x));

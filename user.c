@@ -23,6 +23,7 @@ typedef struct bomb_s{
     uchar x;
     uchar y;
     uchar timelimit;
+    uchar atack;
     uchar obj_id;
     uchar set;      // 設置済みか
 } bomb_t;

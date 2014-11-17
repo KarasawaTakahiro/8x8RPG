@@ -42,6 +42,7 @@ volatile uchar obj_tbl[FIELD_SZ][FIELD_SZ] = {{0}};
 volatile player_t player;
 volatile uchar marker_f;
 volatile bomb_t bomb;
+
 volatile uchar print = 0x00;
 volatile uchar print1 = 0x00;
 volatile uchar print2 = 0x00;
@@ -173,25 +174,14 @@ void changeDirection(){
     marker_f = 1;
 }
 
-// 前方のオブジェクトを返す
+// 前方のオブジェクトIDを返す
 // pos, direction
 uchar searchFront(uchar x, uchar y, uchar dir){
-    uint mask = (0x8000 >> x);   // マスク
+    uchar fx, fy;
 
-    switch(dir){
-        case 0:     // 右の値を返す
-            return ((field[y] & (mask>>1)) >> (FIELD_SZ - (x+2)));
-            break;
-        case 1:     // 上
-            return ((field[y+1] & mask) >> (FIELD_SZ - (x+1)));
-            break;
-        case 2:     // 左
-            return ((field[y] & (mask<<1)) >> (FIELD_SZ - x));
-            break;
-        case 3:     // 下
-            return ((field[y-1] & mask) >> (FIELD_SZ - (x+1)));
-            break;
-    }
+    getFrontCoord(x, y, dir, &fx, &fy);
+
+    return obj_tbl[fy][fx];
 }
 
 /*

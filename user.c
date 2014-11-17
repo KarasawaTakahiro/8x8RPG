@@ -23,6 +23,7 @@ typedef struct bomb_s{
     uchar x;
     uchar y;
     uchar timelimit;
+    uchar atack;
     uchar obj_id;
     uchar set;      // 設置済みか
 } bomb_t;
@@ -322,7 +323,7 @@ void setBomb(){
 
 // 爆弾が爆発
 void explodeBomb(){
-    uchar i, j;
+    uchar i, j, x, y;
 
     // 消滅処理
     bomb.set = 0;
@@ -331,7 +332,10 @@ void explodeBomb(){
     // ダメージ処理
     for(i=-1; i<=1; i++){
         for(j=-1; j<=1; j++){
-
+            x = bomb.x + j;
+            y = bomb.y + i;
+            if((0 < x) && (x < FIELD_MAX) && (0 < y) && (y < FIELD_MAX))
+                damage(x, y, bomb.atack);
         }
     }
 }

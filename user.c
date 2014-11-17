@@ -129,7 +129,10 @@ void initField(){
 
     field[31] = 0b11111111111111111111111111111111;
     for(i=1; i<31; i++)
-        field[i]  = 0b10000000000000000000000000000001;
+        if(i%2)
+            field[i]  = 0b10000000000000000000000000001001;
+        else
+            field[i]  = 0b10011011011011011011011011000001;
     field[0]  = 0b11111111111111111111111111111111;
 
 }
@@ -200,7 +203,7 @@ void showDungeon(){
     uchar i;
     ulong mask;    // マスク
     signed char curx;  // 左端を基準にする
-    signed char cury = player.y-4;  // 下を基準に
+    signed char cury = player.y-3;  // 下を基準に
     ulong row;
     for(i=0; i<8; i++){
         led[i] = 0x00;
@@ -210,10 +213,15 @@ void showDungeon(){
             curx = player.x - 3;
             mask = 0xff000000;
             led[i] = (uchar)((field[cury+i] & (mask << (-curx))) >> (FIELD_SZ - LED_SZ - curx));
-        }else if(3 <= curx && curx < FIELD_MAX-4){  // 真ん中
-        }else if(FIELD_MAX-4 < player.x){  // 右端
-            mask = (0xff >> (player.x - (FIELD_MAX - 4)));
-            led[i] = (uchar)((field[cury+i] & mask) << (player.x - (FIELD_MAX - 4)));
+        }else if(0 <= player.x-3 && player.x+4 <= FIELD_MAX){  // 真ん中
+            curx = player.x - 3;
+            mask = (0xff000000 >> curx);
+            led[i] = (uchar)(((field[cury+i] & mask)) >> (FIELD_SZ - (LED_SZ + curx)));
+        }else if(FIELD_MAX < player.x+4){  // 画面の右端がFIELD_MAXより右
+            curx = player.x + 4;
+            mask = (0x000000ff >> (curx - FIELD_MAX + 2));
+            led[i] = (uchar)((field[cury+i] & mask) << (curx - FIELD_MAX + 2));
+            print1 = (uchar)mask;
         }
         /*
         if(curx < 0)     // フィールドの左端を壁で表示

@@ -2,12 +2,14 @@
 #define LED_MAX LED_SZ-1
 #define FIELD_SZ 32     // ゲームフィールドサイズ
 #define FIELD_MAX FIELD_SZ-1
-// ダンジョンの状態
+// ダンジョンの状態 オブジェクトID
 #define P 0     // 通路
 #define W 1     // 壁
 #define ID_PLAYER 2
 #define ID_MOB 3
 #define ID_BOMB 4
+// 爆弾の定義
+#define BOMB_TIMELIMIT 5        // [sec]
 typedef unsigned char uchar;
 typedef unsigned long ulong;
 enum

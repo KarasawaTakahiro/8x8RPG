@@ -25,6 +25,7 @@ typedef struct bomb_s{
     uchar timelimit;
     uchar show_f;   // 表示フラグ
     uchar obj_id;
+    uchar set;      // 設置済みか
 } bomb_t;
 // ローカル関数
 static void MoveEnemy(void);
@@ -37,6 +38,7 @@ volatile uchar led[LED_SZ]; // マトリクスLED
 volatile uchar gameover = 0;// ゲーム終了フラグ
 // ローカル変数
 volatile ulong field[FIELD_SZ] = {0};
+volatile uchar obj_tbl[FIELD_SZ][FIELD_SZ] = {{0}};
 volatile player_t player;
 volatile uchar marker_f;
 volatile bomb_t bomb;
@@ -51,6 +53,9 @@ uchar searchFront(uchar, uchar, uchar);
 void walk(void);
 void showMarker(void);
 void showDungeon(void);
+void getFrontCoord(uchar, uchar, uchar, uchar*, uchar*);
+void setObject(uchar, uchar, uchar);
+void setBomb(void);
 
 /*
     フレームワークから呼ばれる関数群
@@ -97,7 +102,7 @@ static void MoveBullet(void)
 }
 
 /*
-    プレイヤーの移動
+    プレイヤーの行動
  */
 static void MoveFort(void) {
     switch(sw){
@@ -107,6 +112,9 @@ static void MoveFort(void) {
             break;
         case 2:
             changeDirection();
+            break;
+        case 3:
+            setBomb();
             break;
     }
 }
@@ -121,10 +129,7 @@ static void UpdateLED(void)
     // 方向
     showMarker();
 
-    print = player.y;
-
-    //led[0] = print;
-    //led[6] = print2;
+    led[0] = print;
 }
 
 /*
@@ -135,10 +140,13 @@ void initField(){
     uchar i;
     field[31] = 0b11111111111111111111111111111111;
     for(i=1; i<31; i++)
-        if(i%2)
-            field[i]  = 0b10000000000000000000000000001001;
-        else
-            field[i]  = 0b10011011011011011011011011000001;
+        /*
+           if(i%2)
+           field[i]  = 0b10000000000000000000000000001001;
+           else
+           field[i]  = 0b10011011011011011011011011000001;
+         */
+        field[i] =0x80000001;
     field[0]  = 0b11111111111111111111111111111111;
 
 }
@@ -255,7 +263,7 @@ void showDungeon(){
     dir  : オブジェクトの方向
     fx, fy : 戻り用ポインタ
 */
-void getFrontCoord(uchar x, uchar y, uchar dir, uchar *fx, uchar *fy){
+void getFrontCoord(uchar x, uchar y, uchar dir, uchar* fx, uchar* fy){
     switch(dir){
         case 0:     // 右の値を返す
             *fx = x+1;  *fy = y;
@@ -272,9 +280,20 @@ void getFrontCoord(uchar x, uchar y, uchar dir, uchar *fx, uchar *fy){
     }
 }
 
+void setObject(uchar x, uchar y, uchar obj_id){
+    obj_tbl[y][x] = obj_id;
+}
+
 // 爆弾を置く
 void setBomb(){
-    if(searchFront(player.x, player.y, player.dir) == P){
+    uchar fx, fy;
+
+    // 爆弾を未設置 && 前方の確認
+    if(bomb.set == 0 && searchFront(player.x, player.y, player.dir) == P){   
+        getFrontCoord(player.x, player.y, player.dir, &fx, &fy);
+        bomb.timelimit = BOMB_TIMELIMIT;    // タイムリミットをセット
+        setObject(fx, fy, bomb.obj_id);     // 爆弾を設置
+        bomb.set = 1;
     }
 }
 

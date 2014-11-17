@@ -334,7 +334,7 @@ void explodeBomb(){
             x = bomb.x + j;
             y = bomb.y + i;
             if((0 < x) && (x < FIELD_MAX) && (0 < y) && (y < FIELD_MAX))
-                damage(x, y, 5);
+                damage(x, y, bomb.atack);
         }
     }
 }

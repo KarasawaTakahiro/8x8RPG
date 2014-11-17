@@ -25,6 +25,10 @@ ISR(TIMER0_COMPA_vect)
     }
 }
 
+ISR(TIMER1_COMPA_vect){
+    timer_1sec_comp();
+}
+
 int main(void)
 {
     /* ポート設定 */
@@ -41,6 +45,7 @@ int main(void)
     OCR1A = 7812;
     TCCR1A = 0x00;
     TCCR1B = 0x04;  // CTC
+    TIMSK1 |= (1 << OCIE1A);    // 割り込み設定
     // LED点滅用タイマ
     OCR2A = 0;
     TCCR2A = 0;
@@ -68,3 +73,11 @@ void _sound(uchar tone)
     */
 }
 
+void timer_1sec_start(){
+    TCCR1B |= 0x05;
+}
+
+void timer_1sec_stop(){
+    TCCR1B &= 0xf8;
+    TCNT1 = 0x0000;
+}

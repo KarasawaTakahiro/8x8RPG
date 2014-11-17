@@ -79,6 +79,8 @@ void user_init(void)
     bomb.obj_id = ID_BOMB;
 
     initField();
+    timer_1sec_start();
+    print = 0x55;
 }
 /*
     ユーザ処理
@@ -111,9 +113,12 @@ static void MoveFort(void) {
         case 1:
             if(searchFront(player.x, player.y, player.dir) == ID_PASSAGE)
                 walk();
+            timer_1sec_start();
+            print = 0x55;
             break;
         case 2:
             changeDirection();
+            print = 0xff;
             break;
         case 3:
             setBomb();
@@ -307,3 +312,7 @@ void setBomb(){
     }
 }
 
+void timer_1sec_comp(){
+    print = 0xaa;
+    timer_1sec_stop();
+}

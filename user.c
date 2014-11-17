@@ -56,6 +56,7 @@ void showDungeon(void);
 void getFrontCoord(uchar, uchar, uchar, uchar*, uchar*);
 void setObject(uchar, uchar, uchar);
 void setBomb(void);
+void convObjToField(void);
 
 /*
     フレームワークから呼ばれる関数群
@@ -107,7 +108,7 @@ static void MoveBullet(void)
 static void MoveFort(void) {
     switch(sw){
         case 1:
-            if(searchFront(player.x, player.y, player.dir) == P)
+            if(searchFront(player.x, player.y, player.dir) == ID_PASSAGE)
                 walk();
             break;
         case 2:
@@ -123,7 +124,6 @@ static void MoveFort(void) {
  */
 static void UpdateLED(void)
 {
-
     showDungeon();
     led[3] |= 0x10; // プレイヤーの位置
     // 方向
@@ -137,18 +137,34 @@ static void UpdateLED(void)
 */
 // フィールドの初期化
 void initField(){
-    uchar i;
-    field[31] = 0b11111111111111111111111111111111;
-    for(i=1; i<31; i++)
-        /*
-           if(i%2)
-           field[i]  = 0b10000000000000000000000000001001;
-           else
-           field[i]  = 0b10011011011011011011011011000001;
-         */
-        field[i] =0x80000001;
-    field[0]  = 0b11111111111111111111111111111111;
+    uchar x, y;
 
+    for(y=0; y<FIELD_SZ; y++){
+        for(x=0; x<FIELD_SZ; x++){
+            if(y == 0 || y == FIELD_MAX)
+                obj_tbl[y][x] = ID_WALL;
+            else
+                if(x == 0 || x == FIELD_MAX)
+                    obj_tbl[y][x] = ID_WALL;
+                else
+                    obj_tbl[y][x] == ID_PASSAGE;
+        }
+    }
+}
+
+void convObjToField(){
+    uchar x, y;
+    ulong row;
+
+    for(y=0; y<FIELD_SZ; y++){
+        row = 0x00000000;
+        for(x=0; x<FIELD_SZ; x++){
+            row <<= 1;
+            if(obj_tbl[y][x] == 1)
+                row ++;
+        }
+        field[y] = row;
+    }
 }
 
 // プレイヤーの移動方向を変更
@@ -220,6 +236,8 @@ void showDungeon(){
     signed char curx;  // X方向の基準点
     signed char cury;  // Y方向の基準点
 
+    convObjToField();
+
     for(i=0; i<LED_SZ; i++){
         led[i] = 0x00;      // 一度真っ白にする
 
@@ -289,7 +307,7 @@ void setBomb(){
     uchar fx, fy;
 
     // 爆弾を未設置 && 前方の確認
-    if(bomb.set == 0 && searchFront(player.x, player.y, player.dir) == P){   
+    if(bomb.set == 0 && searchFront(player.x, player.y, player.dir) == ID_PASSAGE){   
         getFrontCoord(player.x, player.y, player.dir, &fx, &fy);
         bomb.timelimit = BOMB_TIMELIMIT;    // タイムリミットをセット
         setObject(fx, fy, bomb.obj_id);     // 爆弾を設置

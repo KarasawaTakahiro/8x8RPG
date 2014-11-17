@@ -153,18 +153,20 @@ void initField(){
     }
 }
 
+// オブジェクトテーブルをフィールドに変換
 void convObjToField(){
     uchar x, y;
-    uint row;
+    uint row;       // フィールドの任意の行
 
-    for(y=0; y<FIELD_SZ; y++){
-        row = 0x0000;
-        for(x=0; x<FIELD_SZ; x++){
-            row <<= 1;
-            if(obj_tbl[y][x] != ID_PASSAGE)
-                row ++;
+    // オブジェクトテーブルを参照していく
+    for(y=0; y<FIELD_SZ; y++){                  // テーブルから行を取り出す
+        row = 0x0000;                           // フィールドの１行
+        for(x=0; x<FIELD_SZ; x++){              // 各行の値を参照
+            row <<= 1;                          // 列送り
+            if(obj_tbl[y][x] != ID_PASSAGE)     // オブジェクトが存在したら
+                row ++;                         // フィールドに反映
         }
-        field[y] = row;
+        field[y] = row;                         // 行に当てはめる
     }
 }
 
@@ -175,7 +177,6 @@ void changeDirection(){
 }
 
 // 前方のオブジェクトIDを返す
-// pos, direction
 uchar searchFront(uchar x, uchar y, uchar dir){
     uchar fx, fy;
 
@@ -288,6 +289,7 @@ void getFrontCoord(uchar x, uchar y, uchar dir, uchar* fx, uchar* fy){
     }
 }
 
+// オブジェクトテーブルにオブジェクトを登録する
 void setObject(uchar x, uchar y, uchar obj_id){
     obj_tbl[y][x] = obj_id;
 }

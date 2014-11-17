@@ -104,11 +104,10 @@ static void UpdateLED(void)
     // 方向
     showMarker();
 
-    print = player.x;
-    //print1 = player[1];
+    print = player.y;
 
     led[0] = print;
-    led[6] = print2;
+    //led[6] = print2;
 }
 
 /*
@@ -198,16 +197,18 @@ void showMarker(){
     }
 }
 
+// ダンジョンの表示
 void showDungeon(){
     uchar i;
     ulong mask;    // マスク
-    signed char curx;  // 左端を基準にする
-    signed char cury = player.y-3;  // 下を基準に
+    signed char curx;  // X方向の基準点
+    signed char cury;  // Y方向の基準点
     ulong row;
-    for(i=0; i<8; i++){
+
+    for(i=0; i<LED_SZ; i++){
         led[i] = 0x00;
-        print1 = 0;
-        // ダンジョンの表示
+        cury = player.y - 3;  // 画面の下を基準に
+        // カメラの左右移動表示
         if(player.x-3 < 0){   // 画面の左端がfieldの左外
             curx = player.x - 3;    // 画面の左端を基準にする
             mask = (0xff000000 << (-curx));
@@ -221,17 +222,19 @@ void showDungeon(){
             mask = (0x000000ff >> (curx - FIELD_MAX + 2));  // マスクの調整
             led[i] = (uchar)((field[cury+i] & mask) << (curx - FIELD_MAX + 2)); // fieldから必要分を切り取って，左に寄せる
         }
-        /*
-        if(curx < 0)     // フィールドの左端を壁で表示
-            led[i] |= (0xff << (LED_SZ - (curx * (-1))));
 
-        else if((FIELD_SZ - LED_SZ) < curx)  // フィールドの右端を壁で表示
-            led[i] |= ~(0xff << (curx - (FIELD_SZ - LED_SZ - 1)));
-           if(0 < cury && cury < FIELD_SZ)
-           if(i < (cury*(-1)))
-           led[i] |= 0xff;
-         */
-        // ダンジョンの表示　ここまで
+        // カメラの上下移動表示
+        if(FIELD_MAX < player.y+4){           // 上
+            cury = player.y + 4;    // 画面の上端を基準に
+            if((LED_MAX-1)-(cury-FIELD_MAX) <= i){  // フィールド外
+                led[i] = 0x00000000;
+            }
+        }else if(player.y-3 < 0){     // 下
+            cury = player.y - 3;    // 画面の下端を基準に
+            if(cury < 0 && i < (-cury)){
+                led[i] = 0xaaaaaaaa;
+            }
+        }
     }
 }
 

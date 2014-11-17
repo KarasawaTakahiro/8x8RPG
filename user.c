@@ -161,7 +161,7 @@ void convObjToField(){
         row = 0x0000;
         for(x=0; x<FIELD_SZ; x++){
             row <<= 1;
-            if(obj_tbl[y][x] == 1)
+            if(obj_tbl[y][x] != ID_PASSAGE)
                 row ++;
         }
         field[y] = row;

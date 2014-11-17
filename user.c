@@ -137,6 +137,8 @@ static void UpdateLED(void)
     showMarker();
 
     led[0] = print;
+    led[1] = mob.hp;
+    led[6] = print2;
 }
 
 /*
@@ -324,7 +326,7 @@ void setBomb(){
 
 // 爆弾が爆発
 void explodeBomb(){
-    uchar i, j, x, y;
+    signed char i, j, x, y;
 
     // 消滅処理
     bomb.set = 0;
@@ -335,8 +337,7 @@ void explodeBomb(){
         for(j=-1; j<=1; j++){
             x = bomb.x + j;
             y = bomb.y + i;
-            if((0 < x) && (x < FIELD_MAX) && (0 < y) && (y < FIELD_MAX))
-                damage(x, y, bomb.atack);
+            damage(x, y, bomb.atack);
         }
     }
 }
@@ -402,9 +403,12 @@ void hitPassage(uchar x, uchar y, uchar val){
 
 // Mobへのダメージ
 void hitMob(uchar x, uchar y, uchar val){
+    print2 = 0x00;
     if(mob.hp < val){
+        print2 = 0x0a;
         deadMob(x, y);
     }else{
+        print2 = val;
         mob.hp -= val;
     }
 }
@@ -420,6 +424,8 @@ void hitPlayer(uchar val){
 }
 
 void deadMob(uchar x, uchar y){
+    print2 = 0x55;
+    rmObject(x, y, ID_MOB);
 }
 
 void initBomb(){

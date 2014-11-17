@@ -37,7 +37,7 @@ volatile uchar sw = 0;      // 押しボタン
 volatile uchar led[LED_SZ]; // マトリクスLED
 volatile uchar gameover = 0;// ゲーム終了フラグ
 // ローカル変数
-volatile ulong field[FIELD_SZ] = {0};
+volatile uint field[FIELD_SZ] = {0};
 volatile uchar obj_tbl[FIELD_SZ][FIELD_SZ] = {{0}};
 volatile player_t player;
 volatile uchar marker_f;
@@ -68,7 +68,7 @@ void user_init(void)
 {
     gameover = 0;
 
-    player.x = 26;
+    player.x = 2;
     player.y = 2;
     player.dir = 0;
     player.obj_id = ID_PLAYER;
@@ -157,7 +157,7 @@ void convObjToField(){
     ulong row;
 
     for(y=0; y<FIELD_SZ; y++){
-        row = 0x00000000;
+        row = 0x0000;
         for(x=0; x<FIELD_SZ; x++){
             row <<= 1;
             if(obj_tbl[y][x] == 1)
@@ -176,7 +176,7 @@ void changeDirection(){
 // 前方のオブジェクトを返す
 // pos, direction
 uchar searchFront(uchar x, uchar y, uchar dir){
-    ulong mask = (0x80000000 >> x);   // マスク
+    ulong mask = (0x8000 >> x);   // マスク
 
     switch(dir){
         case 0:     // 右の値を返す
@@ -245,17 +245,17 @@ void showDungeon(){
         cury = player.y - 3;  // 画面の下を基準に
         if(player.x-3 < 0){                                     // 画面の左端がfieldの左外
             curx = player.x - 3;                                // 画面の左端を基準にする
-            mask = (0xff000000 << (-curx));
+            mask = (0xff00 << (-curx));
             led[i] = (uchar)((field[cury+i] & mask) >> (FIELD_SZ - LED_SZ - curx));    // fieldから必要分を切り取って，右に詰める
 
         }else if(0 <= player.x-3 && player.x+4 <= FIELD_MAX){   // 真ん中 フィールドの表示
             curx = player.x - 3;                                // 画面の左端を基準に
-            mask = (0xff000000 >> curx);                        // マスクの調整
+            mask = (0xff00 >> curx);                        // マスクの調整
             led[i] = (uchar)(((field[cury+i] & mask)) >> (FIELD_SZ - (LED_SZ + curx))); // fieldから必要分を切り取って，右に詰める
 
         }else if(FIELD_MAX < player.x+4){                       // 画面の右端がFIELD_MAXより右
             curx = player.x + 4;                                // 画面の右端を基準にする
-            mask = (0x000000ff >> (curx - FIELD_MAX + 2));      // マスクの調整
+            mask = (0x00ff >> (curx - FIELD_MAX + 2));      // マスクの調整
             led[i] = (uchar)((field[cury+i] & mask) << (curx - FIELD_MAX + 2)); // fieldから必要分を切り取って，左に寄せる
         }
 
@@ -263,12 +263,12 @@ void showDungeon(){
         if(FIELD_MAX < player.y+4){                 // 上
             cury = player.y + 4;                    // 画面の上端を基準に
             if((LED_MAX-1)-(cury-FIELD_MAX) <= i){  // フィールド外
-                led[i] = 0x00000000;
+                led[i] = 0x0000;
             }
         }else if(player.y-3 < 0){                   // 下
             cury = player.y - 3;                    // 画面の下端を基準に
             if(cury < 0 && i < (-cury)){            // フィールド外
-                led[i] = 0x00000000;
+                led[i] = 0x0000;
             }
         }
     }

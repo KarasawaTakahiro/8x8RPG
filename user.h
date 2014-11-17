@@ -1,6 +1,6 @@
 #define LED_SZ 8        // 8x8LED
 #define LED_MAX LED_SZ-1
-#define FIELD_SZ 32     // ゲームフィールドサイズ
+#define FIELD_SZ 16     // ゲームフィールドサイズ
 #define FIELD_MAX FIELD_SZ-1
 // ダンジョンの状態 オブジェクトID
 #define ID_PASSAGE 0     // 通路
@@ -10,8 +10,9 @@
 #define ID_BOMB 4
 // 爆弾の定義
 #define BOMB_TIMELIMIT 5        // [sec]
-typedef unsigned char uchar;
-typedef unsigned long ulong;
+typedef unsigned char uchar;    // 1byte
+typedef unsigned int  uint;     // 2byte
+typedef unsigned long ulong;    // 4byte
 enum
 {
     BEEP_LOW,

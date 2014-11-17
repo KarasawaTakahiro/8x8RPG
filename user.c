@@ -74,9 +74,10 @@ void user_init(void)
 
     bomb.obj_id = ID_BOMB;
 
-    bornMob(4, 4);
 
     initField();
+    initPlayer(2, 2);
+    bornMob(4, 4);
 }
 /*
     ユーザ処理

@@ -203,38 +203,41 @@ void showDungeon(){
     ulong mask;    // マスク
     signed char curx;  // X方向の基準点
     signed char cury;  // Y方向の基準点
-    ulong row;
 
     for(i=0; i<LED_SZ; i++){
-        led[i] = 0x00;
+        led[i] = 0x00;      // 一度真っ白にする
+
+        // フィールドの表示と，左右フィールド外の表示
         cury = player.y - 3;  // 画面の下を基準に
-        // カメラの左右移動表示
-        if(player.x-3 < 0){   // 画面の左端がfieldの左外
-            curx = player.x - 3;    // 画面の左端を基準にする
+        if(player.x-3 < 0){                                     // 画面の左端がfieldの左外
+            curx = player.x - 3;                                // 画面の左端を基準にする
             mask = (0xff000000 << (-curx));
             led[i] = (uchar)((field[cury+i] & mask) >> (FIELD_SZ - LED_SZ - curx));    // fieldから必要分を切り取って，右に詰める
-        }else if(0 <= player.x-3 && player.x+4 <= FIELD_MAX){  // 真ん中
-            curx = player.x - 3;    // 画面の左端を基準に
-            mask = (0xff000000 >> curx);    // マスクの調整
+
+        }else if(0 <= player.x-3 && player.x+4 <= FIELD_MAX){   // 真ん中 フィールドの表示
+            curx = player.x - 3;                                // 画面の左端を基準に
+            mask = (0xff000000 >> curx);                        // マスクの調整
             led[i] = (uchar)(((field[cury+i] & mask)) >> (FIELD_SZ - (LED_SZ + curx))); // fieldから必要分を切り取って，右に詰める
-        }else if(FIELD_MAX < player.x+4){  // 画面の右端がFIELD_MAXより右
-            curx = player.x + 4;    // 画面の右端を基準にする
-            mask = (0x000000ff >> (curx - FIELD_MAX + 2));  // マスクの調整
+
+        }else if(FIELD_MAX < player.x+4){                       // 画面の右端がFIELD_MAXより右
+            curx = player.x + 4;                                // 画面の右端を基準にする
+            mask = (0x000000ff >> (curx - FIELD_MAX + 2));      // マスクの調整
             led[i] = (uchar)((field[cury+i] & mask) << (curx - FIELD_MAX + 2)); // fieldから必要分を切り取って，左に寄せる
         }
 
         // フィールド外の上下表示
-        if(FIELD_MAX < player.y+4){           // 上
-            cury = player.y + 4;    // 画面の上端を基準に
+        if(FIELD_MAX < player.y+4){                 // 上
+            cury = player.y + 4;                    // 画面の上端を基準に
             if((LED_MAX-1)-(cury-FIELD_MAX) <= i){  // フィールド外
                 led[i] = 0x00000000;
             }
-        }else if(player.y-3 < 0){     // 下
-            cury = player.y - 3;    // 画面の下端を基準に
-            if(cury < 0 && i < (-cury)){    // フィールド外
+        }else if(player.y-3 < 0){                   // 下
+            cury = player.y - 3;                    // 画面の下端を基準に
+            if(cury < 0 && i < (-cury)){            // フィールド外
                 led[i] = 0x00000000;
             }
         }
     }
+
 }
 

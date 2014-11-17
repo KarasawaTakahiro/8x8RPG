@@ -38,7 +38,8 @@ void initField(void);
 void changeDirection(void);
 uchar searchFront(uchar, uchar, uchar);
 void walk(void);
-void showMarker();
+void showMarker(void);
+void showDungeon(void);
 
 /*
     フレームワークから呼ばれる関数群
@@ -97,42 +98,13 @@ static void MoveFort(void) {
  */
 static void UpdateLED(void)
 {
-    uchar i;
-    ulong mask = 0xff000000;    // マスク
-    signed char curx = player.x-3;  // 左端を基準にする
-    signed char cury = player.y-4;  // 上を基準に
-    ulong row;
-    signed char leftMask = 0x80;
-    for(i=0; i<8; i++){
-        led[i] = 0x00;
-        print1 = 0;
-        // ダンジョンの表示
-        if(curx < 0){   // 左端
-            row = (field[cury+i] & (mask >> curx));
-            row >>= (FIELD_SZ - curx);
-            led[i] = (uchar)row;
-            print1 = 0xaa;
-        }else if(3 <= curx && curx < FIELD_MAX-4){  // 真ん中
-        }else if(FIELD_MAX-4 <= curx){  // 右端
-        }
-        /*
-        if(curx < 0)     // フィールドの左端を壁で表示
-            led[i] |= (0xff << (LED_SZ - (curx * (-1))));
 
-        else if((FIELD_SZ - LED_SZ) < curx)  // フィールドの右端を壁で表示
-            led[i] |= ~(0xff << (curx - (FIELD_SZ - LED_SZ - 1)));
-           if(0 < cury && cury < FIELD_SZ)
-           if(i < (cury*(-1)))
-           led[i] |= 0xff;
-         */
-        // ダンジョンの表示　ここまで
-    }
-
+    showDungeon();
     led[3] |= 0x10; // プレイヤーの位置
     // 方向
     showMarker();
 
-    print = player[0];
+    print = player.x;
     //print1 = player[1];
 
     led[0] = print;
@@ -221,6 +193,40 @@ void showMarker(){
             break;
         }
         led[7] = player.dir;
+    }
+}
+
+void showDungeon(){
+    uchar i;
+    ulong mask;    // マスク
+    signed char curx = player.x-3;  // 左端を基準にする
+    signed char cury = player.y-4;  // 上を基準に
+    ulong row;
+    signed char leftMask = 0x80;
+    for(i=0; i<8; i++){
+        led[i] = 0x00;
+        print1 = 0;
+        // ダンジョンの表示
+        if(curx < 0){   // 左端
+            mask = 0xff000000;
+            led[i] = (uchar)((field[cury+i] & (mask << (-curx))) >> (FIELD_SZ - LED_SZ - curx));
+        }else if(3 <= curx && curx < FIELD_MAX-4){  // 真ん中
+        }else if(FIELD_MAX-4 <= curx){  // 右端
+            mask = 0xff;
+            led[i] = (field[cury+i] >> (mask & (FIELD_MAX-4+curx)));
+            print1 = 0xaa;
+        }
+        /*
+        if(curx < 0)     // フィールドの左端を壁で表示
+            led[i] |= (0xff << (LED_SZ - (curx * (-1))));
+
+        else if((FIELD_SZ - LED_SZ) < curx)  // フィールドの右端を壁で表示
+            led[i] |= ~(0xff << (curx - (FIELD_SZ - LED_SZ - 1)));
+           if(0 < cury && cury < FIELD_SZ)
+           if(i < (cury*(-1)))
+           led[i] |= 0xff;
+         */
+        // ダンジョンの表示　ここまで
     }
 }
 

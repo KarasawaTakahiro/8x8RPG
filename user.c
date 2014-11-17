@@ -50,8 +50,8 @@ void showDungeon(void);
 void user_init(void)
 {
     gameover = 0;
-    player.x = 1;
-    player.y = 1;
+    player.x = 26;
+    player.y = 2;
     player.dir = 0;
     marker_f = 1;
     initField();
@@ -129,7 +129,7 @@ void initField(){
 
     field[31] = 0b11111111111111111111111111111111;
     for(i=1; i<31; i++)
-    field[i]  = 0b10000000000000000000000000000001;
+        field[i]  = 0b10000000000000000000000000000001;
     field[0]  = 0b11111111111111111111111111111111;
 
 }
@@ -199,22 +199,21 @@ void showMarker(){
 void showDungeon(){
     uchar i;
     ulong mask;    // マスク
-    signed char curx = player.x-3;  // 左端を基準にする
-    signed char cury = player.y-4;  // 上を基準に
+    signed char curx;  // 左端を基準にする
+    signed char cury = player.y-4;  // 下を基準に
     ulong row;
-    signed char leftMask = 0x80;
     for(i=0; i<8; i++){
         led[i] = 0x00;
         print1 = 0;
         // ダンジョンの表示
-        if(curx < 0){   // 左端
+        if(player.x-3 < 0){   // 左端
+            curx = player.x - 3;
             mask = 0xff000000;
             led[i] = (uchar)((field[cury+i] & (mask << (-curx))) >> (FIELD_SZ - LED_SZ - curx));
         }else if(3 <= curx && curx < FIELD_MAX-4){  // 真ん中
-        }else if(FIELD_MAX-4 <= curx){  // 右端
-            mask = 0xff;
-            led[i] = (field[cury+i] >> (mask & (FIELD_MAX-4+curx)));
-            print1 = 0xaa;
+        }else if(FIELD_MAX-4 < player.x){  // 右端
+            mask = (0xff >> (player.x - (FIELD_MAX - 4)));
+            led[i] = (uchar)((field[cury+i] & mask) << (player.x - (FIELD_MAX - 4)));
         }
         /*
         if(curx < 0)     // フィールドの左端を壁で表示

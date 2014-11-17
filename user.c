@@ -59,6 +59,7 @@ void setObject(uchar, uchar, uchar);
 void setBomb(void);
 void convObjToField(void);
 void bornMob(uchar, uchar);
+void initPlayer(uchar, uchar);
 
 /*
     フレームワークから呼ばれる関数群
@@ -70,11 +71,6 @@ void user_init(void)
 {
     gameover = 0;
 
-    player.x = 2;
-    player.y = 2;
-    player.dir = 0;
-    player.obj_id = ID_PLAYER;
-    marker_f = 1;
 
     bomb.obj_id = ID_BOMB;
 
@@ -175,7 +171,7 @@ void convObjToField(){
 // プレイヤーの移動方向を変更
 void changeDirection(){
     player.dir = (player.dir + 1) % 4;
-    marker_f = 1;
+    marker_f = MARKER_SHOW;
 }
 
 // 前方のオブジェクトIDを返す
@@ -202,12 +198,12 @@ void walk(){
         case 3: player.y--;    // 下
             break;
     }
-    marker_f = 0;
+    marker_f = MARKER_HIDE;
 }
 
 // プレイヤーの進行方向を示すマーカーを表示する
 void showMarker(){
-    if(marker_f){
+    if(marker_f == MARKER_SHOW){
         switch(player.dir){
         case 0: led[3] |= 0x08;    // 右
             break;                      
@@ -356,5 +352,13 @@ void bornMob(uchar x, uchar y){
     mob.obj_id = ID_MOB;
 
     setObject(x, y, mob.obj_id);
+}
+
+void initPlayer(uchar x, uchar y){
+    player.x = x;
+    player.y = y;
+    player.dir = 0;
+    player.obj_id = ID_PLAYER;
+    marker_f = MARKER_SHOW;
 }
 

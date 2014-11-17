@@ -8,6 +8,10 @@
 #define ID_PLAYER 2
 #define ID_MOB 3
 #define ID_BOMB 4
+// プレイヤーの定義
+// マーカーの定義
+#define MARKER_SHOW 1
+#define MARKER_HIDE 0
 // 爆弾の定義
 #define BOMB_TIMELIMIT 5        // [sec]
 // 敵キャラの定義

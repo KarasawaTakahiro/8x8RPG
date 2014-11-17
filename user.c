@@ -60,6 +60,11 @@ void setBomb(void);
 void convObjToField(void);
 void bornMob(uchar, uchar);
 void initPlayer(uchar, uchar);
+void damage(uchar, uchar, uchar);
+void hitPassage(uchar, uchar, uchar);
+void hitMob(uchar, uchar, uchar);
+void hitPlayer(uchar);
+void deadMob(uchar, uchar);
 
 /*
     フレームワークから呼ばれる関数群
@@ -364,3 +369,47 @@ void initPlayer(uchar x, uchar y){
     marker_f = MARKER_SHOW;
 }
 
+// 任意の座標に任意のダメージを与える
+void damage(uchar x, uchar y, uchar value){
+    switch(obj_tbl[y][x]){
+        case ID_PASSAGE:
+            hitPassage(x, y, value);
+            break;
+        case ID_MOB:
+            hitMob(x, y, value);
+            break;
+        case ID_PLAYER:
+            hitPlayer(value);
+            break;
+    }
+}
+
+// 壁へのダメージ
+void hitPassage(uchar x, uchar y, uchar val){
+    // 外壁以外は消滅
+    if((0 <  x) && (x < FIELD_MAX) && (0 < y) && (y < FIELD_MAX)){
+        rmObject(x, y, ID_PASSAGE);
+    }
+}
+
+// Mobへのダメージ
+void hitMob(uchar x, uchar y, uchar val){
+    if(mob.hp < val){
+        deadMob(x, y);
+    }else{
+        mob.hp -= val;
+    }
+}
+
+// プレイヤーへのダメージ
+void hitPlayer(uchar val){
+    if(player.hp < val){
+        player.hp = 0;
+        gameover = 1;
+    }else{
+        player.hp -= val;
+    }
+}
+
+void deadMob(uchar x, uchar y){
+}

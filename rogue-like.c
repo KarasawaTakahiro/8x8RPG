@@ -44,7 +44,7 @@ int main(void)
     // 汎用１secタイマ
     OCR1A = 7812;
     TCCR1A = 0x00;
-    TCCR1B = 0x04;  // CTC
+    TCCR1B = 0x08;  // CTC
     TIMSK1 |= (1 << OCIE1A);    // 割り込み設定
     // LED点滅用タイマ
     OCR2A = 0;

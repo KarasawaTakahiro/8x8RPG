@@ -23,7 +23,6 @@ typedef struct bomb_s{
     uchar x;
     uchar y;
     uchar timelimit;
-    uchar show_f;   // 表示フラグ
     uchar obj_id;
     uchar set;      // 設置済みか
 } bomb_t;
@@ -75,12 +74,9 @@ void user_init(void)
     player.obj_id = ID_PLAYER;
     marker_f = 1;
 
-    bomb.show_f = 0;
     bomb.obj_id = ID_BOMB;
 
     initField();
-    timer_1sec_start();
-    print = 0x55;
 }
 /*
     ユーザ処理
@@ -113,12 +109,9 @@ static void MoveFort(void) {
         case 1:
             if(searchFront(player.x, player.y, player.dir) == ID_PASSAGE)
                 walk();
-            timer_1sec_start();
-            print = 0x55;
             break;
         case 2:
             changeDirection();
-            print = 0xff;
             break;
         case 3:
             setBomb();
@@ -299,6 +292,12 @@ void setObject(uchar x, uchar y, uchar obj_id){
     obj_tbl[y][x] = obj_id;
 }
 
+// オブジェクトテーブルの座標から指定したオブジェクトを削除する
+void rmObject(uchar x, uchar y, uchar obj_id){
+    if(obj_tbl[y][x] == obj_id)
+        obj_tbl[y][x] = ID_PASSAGE;
+}
+
 // 爆弾を置く
 void setBomb(){
     uchar fx, fy;
@@ -308,11 +307,30 @@ void setBomb(){
         getFrontCoord(player.x, player.y, player.dir, &fx, &fy);
         bomb.timelimit = BOMB_TIMELIMIT;    // タイムリミットをセット
         setObject(fx, fy, bomb.obj_id);     // 爆弾を設置
+        bomb.x = fx;
+        bomb.y = fy;
         bomb.set = 1;
+        timer_1sec_start();
     }
 }
 
+// 爆弾が爆発
+void explodeBomb(){
+    // 消滅処理
+    bomb.set = 0;
+    rmObject(bomb.x, bomb.y, bomb.obj_id);
+
+    // ダメージ処理
+}
+
 void timer_1sec_comp(){
-    print = 0xaa;
-    timer_1sec_stop();
+    if(bomb.set){
+        print = bomb.timelimit;
+        if(bomb.timelimit){
+            bomb.timelimit --;
+        }else{
+            explodeBomb();
+            timer_1sec_stop();
+        }
+    }
 }

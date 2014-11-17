@@ -1,6 +1,21 @@
 #include "user.h"
 
 
+// 構造体
+typedef struct player{
+    uchar dist;
+    uchar x;
+    uchar y;
+    uchar hp;
+}player_t;
+
+typedef struct mob{
+    uchar active;
+    uchar atack;
+    uchar x;
+    uchar y;
+    uchar hp;
+};
 // ローカル関数
 static void MoveEnemy(void);
 static void MoveBullet(void);

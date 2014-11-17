@@ -1,5 +1,6 @@
 #define LED_SZ 8        // 8x8LED
 #define FIELD_SZ 32     // ゲームフィールドサイズ
+#define FIELD_MAX FIELD_SZ-1
 // ダンジョンの状態
 #define P 0     // 通路
 #define W 1     // 壁

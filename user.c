@@ -35,8 +35,8 @@ void showMarker();
 void user_init(void)
 {
     gameover = 0;
-    player[0] = 29;
-    player[1] = 4;
+    player[0] = 2;
+    player[1] = 2;
     direction = 0;
     marker_f = 1;
     initField();
@@ -70,8 +70,6 @@ static void MoveBullet(void)
 static void MoveFort(void) {
     switch(sw){
         case 1:
-            print = player[0]; //searchFront(player[0], player[1], direction);
-            print1 = player[1]; //
             print2 = searchFront(player[0], player[1], direction);
             if(searchFront(player[0], player[1], direction) == P)
                 walk();
@@ -88,26 +86,42 @@ static void UpdateLED(void)
 {
     uchar i;
     ulong mask = 0xff000000;    // マスク
-    signed char curx = player[0]-3;  // 左端を基準にする
+    //signed char curx = player[0]-3;  // 左端を基準にする
     signed char cury = player[1]-4;  // 上を基準に
+    signed char curx = player[0]+3;  // 左端を基準にする
+    ulong row;
+    signed char leftMask = 0x80;
     for(i=0; i<8; i++){
         led[i] = 0x00;
+        print1 = 0;
         // ダンジョンの表示
-        if(0 < cury && cury < FIELD_SZ)
-            led[i] = (uchar)((field[cury+i] & (mask >> curx)) >> (FIELD_SZ-curx-LED_SZ));  // フィールドから8x8LEDに表示する部分を切り取る
+        if(curx < 0){   // 左端
+            row = (field[cury+i] & (mask >> curx));
+            row >>= (FIELD_SZ - curx);
+            led[i] = (uchar)row;
+            print1 = 0xaa;
+        }else if(3 <= curx && curx < FIELD_MAX-4){  // 真ん中
+        }else if(FIELD_MAX-4 <= curx){  // 右端
+        }
+        /*
         if(curx < 0)     // フィールドの左端を壁で表示
             led[i] |= (0xff << (LED_SZ - (curx * (-1))));
 
         else if((FIELD_SZ - LED_SZ) < curx)  // フィールドの右端を壁で表示
-            led[i] |= ~(0xff << (curx - (FIELD_SZ-LED_SZ)));
-        if(i < (cury*(-1)))
-            led[i] |= 0xff;
+            led[i] |= ~(0xff << (curx - (FIELD_SZ - LED_SZ - 1)));
+           if(0 < cury && cury < FIELD_SZ)
+           if(i < (cury*(-1)))
+           led[i] |= 0xff;
+         */
         // ダンジョンの表示　ここまで
     }
 
     led[3] |= 0x10; // プレイヤーの位置
     // 方向
     showMarker();
+
+    print = player[0];
+    //print1 = player[1];
 
     led[0] = print;
     led[1] = print1;
@@ -120,14 +134,20 @@ static void UpdateLED(void)
 // フィールドの初期化
 void initField(){
     uchar i;
+    /*
     for(i=0; i<FIELD_SZ; i++){
-        if(i==0 || i==FIELD_SZ-1)
+        //if(i==0 || i==FIELD_SZ-1)
             field[i] = 0xffffffff;
-        else if(i % 3 == 0)
-            field[i] = 0x00000000;
-        else
-            field[i] = 0x80000001;
+        //else
+        //    field[i] = 0x80000001;
     }
+    */
+
+    field[31] = 0b11111111111111111111111111111111;
+    for(i=1; i<31; i++)
+    field[i]  = 0b10000000000000000000000000000001;
+    field[0]  = 0b11111111111111111111111111111111;
+
 }
 
 // プレイヤーの移動方向を変更

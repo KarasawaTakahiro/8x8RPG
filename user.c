@@ -316,11 +316,18 @@ void setBomb(){
 
 // 爆弾が爆発
 void explodeBomb(){
+    uchar i, j;
+
     // 消滅処理
     bomb.set = 0;
     rmObject(bomb.x, bomb.y, bomb.obj_id);
 
     // ダメージ処理
+    for(i=-1; i<=1; i++){
+        for(j=-1; j<=1; j++){
+
+        }
+    }
 }
 
 void timer_1sec_comp(){

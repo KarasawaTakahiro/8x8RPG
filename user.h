@@ -9,6 +9,7 @@
 #define ID_MOB 3
 #define ID_BOMB 4
 // プレイヤーの定義
+#define PLAYER_MAX_HP
 // マーカーの定義
 #define MARKER_SHOW 1
 #define MARKER_HIDE 0

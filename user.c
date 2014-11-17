@@ -358,6 +358,7 @@ void initPlayer(uchar x, uchar y){
     player.x = x;
     player.y = y;
     player.dir = 0;
+    player.hp = PLAYER_MAX_HP;
     player.obj_id = ID_PLAYER;
     marker_f = MARKER_SHOW;
 }

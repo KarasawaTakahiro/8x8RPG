@@ -4,3 +4,6 @@ all:
 clean:
 	rm -fr a.out rogue-like.out rogue-like-gui.out
 
+run:
+	make all
+	./rogue-like-gui.out

@@ -106,7 +106,7 @@ static void UpdateLED(void)
 
     print = player.y;
 
-    led[0] = print;
+    //led[0] = print;
     //led[6] = print2;
 }
 
@@ -223,7 +223,7 @@ void showDungeon(){
             led[i] = (uchar)((field[cury+i] & mask) << (curx - FIELD_MAX + 2)); // fieldから必要分を切り取って，左に寄せる
         }
 
-        // カメラの上下移動表示
+        // フィールド外の上下表示
         if(FIELD_MAX < player.y+4){           // 上
             cury = player.y + 4;    // 画面の上端を基準に
             if((LED_MAX-1)-(cury-FIELD_MAX) <= i){  // フィールド外
@@ -231,8 +231,8 @@ void showDungeon(){
             }
         }else if(player.y-3 < 0){     // 下
             cury = player.y - 3;    // 画面の下端を基準に
-            if(cury < 0 && i < (-cury)){
-                led[i] = 0xaaaaaaaa;
+            if(cury < 0 && i < (-cury)){    // フィールド外
+                led[i] = 0x00000000;
             }
         }
     }

@@ -2,20 +2,20 @@
 
 
 // 構造体
-typedef struct player{
-    uchar dist;
+typedef struct player_s{
+    uchar dir;
     uchar x;
     uchar y;
     uchar hp;
 }player_t;
 
-typedef struct mob{
+typedef struct mob_s{
     uchar active;
     uchar atack;
     uchar x;
     uchar y;
     uchar hp;
-};
+} mob_t;
 // ローカル関数
 static void MoveEnemy(void);
 static void MoveBullet(void);
@@ -27,8 +27,7 @@ volatile uchar led[LED_SZ]; // マトリクスLED
 volatile uchar gameover = 0;// ゲーム終了フラグ
 // ローカル変数
 volatile ulong field[FIELD_SZ] = {0};
-volatile uchar player[2];
-volatile uchar direction;
+volatile player_t player;
 volatile uchar marker_f;
 volatile uchar print = 0x00;
 volatile uchar print1 = 0x00;
@@ -50,9 +49,9 @@ void showMarker();
 void user_init(void)
 {
     gameover = 0;
-    player[0] = 29;
-    player[1] = 4;
-    direction = 0;
+    player.x = 1;
+    player.y = 1;
+    player.dir = 0;
     marker_f = 1;
     initField();
 }
@@ -85,10 +84,7 @@ static void MoveBullet(void)
 static void MoveFort(void) {
     switch(sw){
         case 1:
-            print = player[0]; //searchFront(player[0], player[1], direction);
-            print1 = player[1]; //
-            print2 = searchFront(player[0], player[1], direction);
-            if(searchFront(player[0], player[1], direction) == P)
+            if(searchFront(player.x, player.y, player.dir) == P)
                 walk();
             break;
         case 2:
@@ -103,8 +99,8 @@ static void UpdateLED(void)
 {
     uchar i;
     ulong mask = 0xff000000;    // マスク
-    signed char curx = player[0]-3;  // 左端を基準にする
-    signed char cury = player[1]-4;  // 上を基準に
+    signed char curx = player.x-3;  // 左端を基準にする
+    signed char cury = player.y-4;  // 上を基準に
     for(i=0; i<8; i++){
         led[i] = 0x00;
         // ダンジョンの表示
@@ -147,7 +143,7 @@ void initField(){
 
 // プレイヤーの移動方向を変更
 void changeDirection(){
-    direction = (direction + 1) % 4;
+    player.dir = (player.dir + 1) % 4;
     marker_f = 1;
 }
 
@@ -177,14 +173,14 @@ uchar searchFront(uchar x, uchar y, uchar dir){
     directionに従ってプレイヤーの座標を更新する
 */
 void walk(){
-    switch(direction){
-        case 0: player[0]++;    // 右
+    switch(player.dir){
+        case 0: player.x++;    // 右
             break;
-        case 1: player[1]++;    // 上
+        case 1: player.y++;    // 上
             break;
-        case 2: player[0]--;    // 左
+        case 2: player.x--;    // 左
             break;
-        case 3: player[1]--;    // 下
+        case 3: player.y--;    // 下
             break;
     }
     marker_f = 0;
@@ -193,7 +189,7 @@ void walk(){
 // プレイヤーの進行方向を示すマーカーを表示する
 void showMarker(){
     if(marker_f){
-        switch(direction){
+        switch(player.dir){
         case 0: led[3] |= 0x08;    // 右
             break;                      
         case 1: led[4] |= 0x10;    // 上
@@ -203,7 +199,7 @@ void showMarker(){
         case 3: led[2] |= 0x10;    // 下
             break;
         }
-        led[7] = direction;
+        led[7] = player.dir;
     }
 }
 

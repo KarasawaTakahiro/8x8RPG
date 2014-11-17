@@ -60,6 +60,10 @@ void setBomb(void);
 void convObjToField(void);
 void bornMob(uchar, uchar);
 void initPlayer(uchar, uchar);
+void damage(uchar, uchar, uchar);
+void hitPassage(uchar, uchar, uchar);
+void hitMob(uchar, uchar, uchar);
+void hitPlayer(uchar);
 
 /*
     フレームワークから呼ばれる関数群
@@ -317,7 +321,7 @@ void setBomb(){
 
 // 爆弾が爆発
 void explodeBomb(){
-    uchar i, j;
+    uchar i, j, x, y;
 
     // 消滅処理
     bomb.set = 0;
@@ -326,7 +330,10 @@ void explodeBomb(){
     // ダメージ処理
     for(i=-1; i<=1; i++){
         for(j=-1; j<=1; j++){
-
+            x = bomb.x + j;
+            y = bomb.y + i;
+            if((0 < x) && (x < FIELD_MAX) && (0 < y) && (y < FIELD_MAX))
+                damage(x, y, 5);
         }
     }
 }
@@ -364,3 +371,17 @@ void initPlayer(uchar x, uchar y){
     marker_f = MARKER_SHOW;
 }
 
+// 任意の座標に任意のダメージを与える
+void damage(uchar x, uchar y, uchar value){
+    switch(obj_tbl[y][x]){
+        case ID_PASSAGE:
+            hitPassage(x, y, value);
+            break;
+        case ID_MOB:
+            hitMob(x, y, value);
+            break;
+        case ID_PLAYER:
+            hitPlayer(value);
+            break;
+    }
+}

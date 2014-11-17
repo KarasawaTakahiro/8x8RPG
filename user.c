@@ -108,7 +108,6 @@ static void UpdateLED(void)
     //print1 = player[1];
 
     led[0] = print;
-    led[1] = print1;
     led[6] = print2;
 }
 
@@ -209,19 +208,18 @@ void showDungeon(){
         led[i] = 0x00;
         print1 = 0;
         // ダンジョンの表示
-        if(player.x-3 < 0){   // 左端
-            curx = player.x - 3;
-            mask = 0xff000000;
-            led[i] = (uchar)((field[cury+i] & (mask << (-curx))) >> (FIELD_SZ - LED_SZ - curx));
+        if(player.x-3 < 0){   // 画面の左端がfieldの左外
+            curx = player.x - 3;    // 画面の左端を基準にする
+            mask = (0xff000000 << (-curx));
+            led[i] = (uchar)((field[cury+i] & mask)) >> (FIELD_SZ - LED_SZ - curx));    // fieldから必要分を切り取って，右に詰める
         }else if(0 <= player.x-3 && player.x+4 <= FIELD_MAX){  // 真ん中
-            curx = player.x - 3;
-            mask = (0xff000000 >> curx);
-            led[i] = (uchar)(((field[cury+i] & mask)) >> (FIELD_SZ - (LED_SZ + curx)));
+            curx = player.x - 3;    // 画面の左端を基準に
+            mask = (0xff000000 >> curx);    // マスクの調整
+            led[i] = (uchar)(((field[cury+i] & mask)) >> (FIELD_SZ - (LED_SZ + curx))); // fieldから必要分を切り取って，右に詰める
         }else if(FIELD_MAX < player.x+4){  // 画面の右端がFIELD_MAXより右
-            curx = player.x + 4;
-            mask = (0x000000ff >> (curx - FIELD_MAX + 2));
-            led[i] = (uchar)((field[cury+i] & mask) << (curx - FIELD_MAX + 2));
-            print1 = (uchar)mask;
+            curx = player.x + 4;    // 画面の右端を基準にする
+            mask = (0x000000ff >> (curx - FIELD_MAX + 2));  // マスクの調整
+            led[i] = (uchar)((field[cury+i] & mask) << (curx - FIELD_MAX + 2)); // fieldから必要分を切り取って，左に寄せる
         }
         /*
         if(curx < 0)     // フィールドの左端を壁で表示

@@ -15,6 +15,7 @@
 #define MARKER_HIDE 0
 // 爆弾の定義
 #define BOMB_TIMELIMIT 5        // [sec]
+#define BOMB_ATACK 2
 // 敵キャラの定義
 #define MOB_IDLE 0
 #define MOB_ACTIVE 1

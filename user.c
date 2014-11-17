@@ -154,7 +154,7 @@ void initField(){
 
 void convObjToField(){
     uchar x, y;
-    ulong row;
+    uint row;
 
     for(y=0; y<FIELD_SZ; y++){
         row = 0x0000;
@@ -176,7 +176,7 @@ void changeDirection(){
 // 前方のオブジェクトを返す
 // pos, direction
 uchar searchFront(uchar x, uchar y, uchar dir){
-    ulong mask = (0x8000 >> x);   // マスク
+    uint mask = (0x8000 >> x);   // マスク
 
     switch(dir){
         case 0:     // 右の値を返す
@@ -232,7 +232,7 @@ void showMarker(){
 // ダンジョンの表示
 void showDungeon(){
     uchar i;
-    ulong mask;    // マスク
+    uint mask;    // マスク
     signed char curx;  // X方向の基準点
     signed char cury;  // Y方向の基準点
 

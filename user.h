@@ -12,7 +12,7 @@
 #define BOMB_TIMELIMIT 5        // [sec]
 typedef unsigned char uchar;    // 1byte
 typedef unsigned int  uint;     // 2byte
-typedef unsigned long ulong;    // 4byte
+//typedef unsigned long ulong;    // 4byte
 enum
 {
     BEEP_LOW,

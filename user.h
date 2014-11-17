@@ -10,6 +10,11 @@
 #define ID_BOMB 4
 // 爆弾の定義
 #define BOMB_TIMELIMIT 5        // [sec]
+// 敵キャラの定義
+#define MOB_IDLE 0
+#define MOB_ACTIVE 1
+#define MOB_ATACK 1
+#define MOB_HP 3
 typedef unsigned char uchar;    // 1byte
 typedef unsigned int  uint;     // 2byte
 //typedef unsigned long ulong;    // 4byte

@@ -41,6 +41,7 @@ volatile uchar obj_tbl[FIELD_SZ][FIELD_SZ] = {{0}};
 volatile player_t player;
 volatile uchar marker_f;
 volatile bomb_t bomb;
+volatile mob_t mob;
 
 volatile uchar print = 0x00;
 volatile uchar print1 = 0x00;
@@ -57,6 +58,7 @@ void getFrontCoord(uchar, uchar, uchar, uchar*, uchar*);
 void setObject(uchar, uchar, uchar);
 void setBomb(void);
 void convObjToField(void);
+void bornMob(uchar, uchar);
 
 /*
     フレームワークから呼ばれる関数群
@@ -75,6 +77,8 @@ void user_init(void)
     marker_f = 1;
 
     bomb.obj_id = ID_BOMB;
+
+    bornMob(4, 4);
 
     initField();
 }
@@ -341,3 +345,16 @@ void timer_1sec_comp(){
         }
     }
 }
+
+// 敵の設置
+void bornMob(uchar x, uchar y){
+    mob.active = MOB_IDLE;
+    mob.atack = MOB_ATACK;
+    mob.x = x;
+    mob.y = y;
+    mob.hp = MOB_HP;
+    mob.obj_id = ID_MOB;
+
+    setObject(x, y, mob.obj_id);
+}
+

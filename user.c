@@ -138,7 +138,7 @@ static void UpdateLED(void)
 
     led[0] = print;
     led[1] = mob.hp;
-    led[6] = print2;
+    //led[6] = print2;
 }
 
 /*
@@ -403,12 +403,9 @@ void hitPassage(uchar x, uchar y, uchar val){
 
 // Mobへのダメージ
 void hitMob(uchar x, uchar y, uchar val){
-    print2 = 0x00;
     if(mob.hp < val){
-        print2 = 0x0a;
         deadMob(x, y);
     }else{
-        print2 = val;
         mob.hp -= val;
     }
 }
@@ -424,7 +421,6 @@ void hitPlayer(uchar val){
 }
 
 void deadMob(uchar x, uchar y){
-    print2 = 0x55;
     rmObject(x, y, ID_MOB);
 }
 

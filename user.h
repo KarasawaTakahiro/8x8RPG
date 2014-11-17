@@ -5,6 +5,9 @@
 // ダンジョンの状態
 #define P 0     // 通路
 #define W 1     // 壁
+#define ID_PLAYER 2
+#define ID_MOB 3
+#define ID_BOMB 4
 typedef unsigned char uchar;
 typedef unsigned long ulong;
 enum

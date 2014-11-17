@@ -7,6 +7,7 @@ typedef struct player_s{
     uchar x;
     uchar y;
     uchar hp;
+    uchar obj_id;
 }player_t;
 
 typedef struct mob_s{
@@ -15,7 +16,16 @@ typedef struct mob_s{
     uchar x;
     uchar y;
     uchar hp;
+    uchar obj_id;
 } mob_t;
+
+typedef struct bomb_s{
+    uchar x;
+    uchar y;
+    uchar timelimit;
+    uchar show_f;   // 表示フラグ
+    uchar obj_id;
+} bomb_t;
 // ローカル関数
 static void MoveEnemy(void);
 static void MoveBullet(void);
@@ -29,6 +39,7 @@ volatile uchar gameover = 0;// ゲーム終了フラグ
 volatile ulong field[FIELD_SZ] = {0};
 volatile player_t player;
 volatile uchar marker_f;
+volatile bomb_t bomb;
 volatile uchar print = 0x00;
 volatile uchar print1 = 0x00;
 volatile uchar print2 = 0x00;
@@ -50,10 +61,16 @@ void showDungeon(void);
 void user_init(void)
 {
     gameover = 0;
+
     player.x = 26;
     player.y = 2;
     player.dir = 0;
+    player.obj_id = ID_PLAYER;
     marker_f = 1;
+
+    bomb.show_f = 0;
+    bomb.obj_id = ID_BOMB;
+
     initField();
 }
 /*
@@ -116,15 +133,6 @@ static void UpdateLED(void)
 // フィールドの初期化
 void initField(){
     uchar i;
-    /*
-    for(i=0; i<FIELD_SZ; i++){
-        //if(i==0 || i==FIELD_SZ-1)
-            field[i] = 0xffffffff;
-        //else
-        //    field[i] = 0x80000001;
-    }
-    */
-
     field[31] = 0b11111111111111111111111111111111;
     for(i=1; i<31; i++)
         if(i%2)
@@ -239,5 +247,34 @@ void showDungeon(){
         }
     }
 
+}
+
+/*
+    オブジェクトの前方の座標を取得する
+    x, y : オブジェクトの座標
+    dir  : オブジェクトの方向
+    fx, fy : 戻り用ポインタ
+*/
+void getFrontCoord(uchar x, uchar y, uchar dir, uchar *fx, uchar *fy){
+    switch(dir){
+        case 0:     // 右の値を返す
+            *fx = x+1;  *fy = y;
+            break;
+        case 1:     // 上
+            *fx = x;  *fy = y+1;
+            break;
+        case 2:     // 左
+            *fx = x-1;  *fy = y;
+            break;
+        case 3:     // 下
+            *fx = x;  *fy = y-1;
+            break;
+    }
+}
+
+// 爆弾を置く
+void setBomb(){
+    if(searchFront(player.x, player.y, player.dir) == P){
+    }
 }
 

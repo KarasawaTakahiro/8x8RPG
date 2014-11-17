@@ -1,0 +1,6 @@
+all:	
+	gcc -o rogue-like.out main.c user.c -lncursesw
+	gcc -o rogue-like-gui.out main-gui.c user.c -lpthread -ltcl -ltk -I/usr/include/tk
+clean:
+	rm -fr a.out rogue-like.out rogue-like-gui.out
+

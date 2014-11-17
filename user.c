@@ -66,6 +66,7 @@ void hitPassage(uchar, uchar, uchar);
 void hitMob(uchar, uchar, uchar);
 void hitPlayer(uchar);
 void deadMob(uchar, uchar);
+void initBomb(void);
 
 /*
     フレームワークから呼ばれる関数群
@@ -370,7 +371,10 @@ void initPlayer(uchar x, uchar y){
     player.dir = 0;
     player.hp = PLAYER_MAX_HP;
     player.obj_id = ID_PLAYER;
+
     marker_f = MARKER_SHOW;
+
+    initBomb();
 }
 
 // 任意の座標に任意のダメージを与える
@@ -416,4 +420,11 @@ void hitPlayer(uchar val){
 }
 
 void deadMob(uchar x, uchar y){
+}
+
+void initBomb(){
+    bomb.timelimit = BOMB_TIMELIMIT;
+    bomb.atack = BOMB_ATACK;
+    bomb.obj_id = ID_BOMB;
+    bomb.set = 0;
 }

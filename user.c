@@ -211,7 +211,7 @@ void showDungeon(){
         if(player.x-3 < 0){   // 画面の左端がfieldの左外
             curx = player.x - 3;    // 画面の左端を基準にする
             mask = (0xff000000 << (-curx));
-            led[i] = (uchar)((field[cury+i] & mask)) >> (FIELD_SZ - LED_SZ - curx));    // fieldから必要分を切り取って，右に詰める
+            led[i] = (uchar)((field[cury+i] & mask) >> (FIELD_SZ - LED_SZ - curx));    // fieldから必要分を切り取って，右に詰める
         }else if(0 <= player.x-3 && player.x+4 <= FIELD_MAX){  // 真ん中
             curx = player.x - 3;    // 画面の左端を基準に
             mask = (0xff000000 >> curx);    // マスクの調整

@@ -36,6 +36,7 @@ static void UpdateLED(void);
 volatile uchar sw = 0;      // 押しボタン
 volatile uchar led[LED_SZ]; // マトリクスLED
 volatile uchar gameover = 0;// ゲーム終了フラグ
+volatile uchar flash = 0;
 // ローカル変数
 volatile uint field[FIELD_SZ] = {0};
 volatile uchar obj_tbl[FIELD_SZ][FIELD_SZ] = {{0}};
@@ -171,7 +172,9 @@ void convObjToField(){
         row = 0x0000;                           // フィールドの１行
         for(x=0; x<FIELD_SZ; x++){              // 各行の値を参照
             row <<= 1;                          // 列送り
-            if(obj_tbl[y][x] != ID_PASSAGE)     // オブジェクトが存在したら
+            /*if(obj_tbl[y][x] == ID_MOB && flash)
+                row ++;
+            else*/ if(obj_tbl[y][x] != ID_PASSAGE)// オブジェクトが存在したら
                 row ++;                         // フィールドに反映
         }
         field[y] = row;                         // 行に当てはめる

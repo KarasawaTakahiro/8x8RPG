@@ -20,7 +20,6 @@ ISR(TIMER0_COMPA_vect)
     if (++clk >= 50) {          // 100mSごとに起動
         clk = 0;
         sw = (~PINC >> 4) & 3;  // スイッチよみ
-        TCCR2A = 0;             // ブザー停止
         user_main();
     }
 }
@@ -47,9 +46,10 @@ int main(void)
     TCCR1B = 0x08;  // CTC
     TIMSK1 |= (1 << OCIE1A);    // 割り込み設定
     // LED点滅用タイマ
-    OCR2A = 0;
-    TCCR2A = 0;
-    TCCR2B = 0x44; /* 1/64 */
+    OCR2A = 40;      // LED
+    OCR2B = 0;      // sound
+    TCCR2A = 0xa1;  // PWM COMA,B toggle
+    TCCR2B = 0x04;  // 1/64
 
     // ゲーム初期化
     user_init();
@@ -81,3 +81,4 @@ void timer_1sec_stop(){
     TCCR1B &= 0xf8;
     TCNT1 = 0x0000;
 }
+

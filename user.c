@@ -139,7 +139,7 @@ static void UpdateLED(void)
 
     led[0] = print;
     led[1] = mob.hp;
-    led[6] = flash;
+    //led[6] = flash;
 }
 
 /*
@@ -172,7 +172,9 @@ void convObjToField(){
         row = 0x0000;                           // フィールドの１行
         for(x=0; x<FIELD_SZ; x++){              // 各行の値を参照
             row <<= 1;                          // 列送り
-            if(obj_tbl[y][x] != ID_PASSAGE)     // オブジェクトが存在したら
+            if(obj_tbl[y][x] == ID_MOB)     // オブジェクトが存在したら
+                row |= (uint)flash;
+            else if(obj_tbl[y][x] != ID_PASSAGE)     // オブジェクトが存在したら
                 row ++;                         // フィールドに反映
         }
         field[y] = row;                         // 行に当てはめる
@@ -405,6 +407,7 @@ void hitPassage(uchar x, uchar y, uchar val){
 // Mobへのダメージ
 void hitMob(uchar x, uchar y, uchar val){
     if(mob.hp < val){
+        mob.hp = 0;
         deadMob(x, y);
     }else{
         mob.hp -= val;
@@ -421,6 +424,7 @@ void hitPlayer(uchar val){
     }
 }
 
+// MOBの死亡処理
 void deadMob(uchar x, uchar y){
     rmObject(x, y, ID_MOB);
 }

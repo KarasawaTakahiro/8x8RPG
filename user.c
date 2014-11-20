@@ -36,6 +36,7 @@ static void UpdateLED(void);
 volatile uchar sw = 0;      // 押しボタン
 volatile uchar led[LED_SZ]; // マトリクスLED
 volatile uchar gameover = 0;// ゲーム終了フラグ
+volatile uchar flash = 0;
 // ローカル変数
 volatile uint field[FIELD_SZ] = {0};
 volatile uchar obj_tbl[FIELD_SZ][FIELD_SZ] = {{0}};
@@ -138,7 +139,7 @@ static void UpdateLED(void)
 
     led[0] = print;
     led[1] = mob.hp;
-    //led[6] = print2;
+    led[6] = flash;
 }
 
 /*

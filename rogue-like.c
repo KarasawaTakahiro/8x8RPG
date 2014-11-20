@@ -28,6 +28,10 @@ ISR(TIMER1_COMPA_vect){
     timer_1sec_comp();
 }
 
+ISR(TIMER2_COMPA_vect){
+    flash = flash ? 0 : 1;
+}
+
 int main(void)
 {
     /* ポート設定 */
@@ -46,10 +50,12 @@ int main(void)
     TCCR1B = 0x08;  // CTC
     TIMSK1 |= (1 << OCIE1A);    // 割り込み設定
     // LED点滅用タイマ
-    OCR2A = 40;      // LED
+    OCR2A = 20;      // LED
     OCR2B = 0;      // sound
-    TCCR2A = 0xa1;  // PWM COMA,B toggle
+    //TCCR2A = 0xa1;  // PWM COMA,B toggle
+    TCCR2A = 0x02;  // CTC COMA,B toggle
     TCCR2B = 0x04;  // 1/64
+    TIMSK2 |= (1 << OCIE2A);
 
     // ゲーム初期化
     user_init();

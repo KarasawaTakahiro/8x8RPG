@@ -68,6 +68,7 @@ void hitMob(uchar, uchar, uchar);
 void hitPlayer(uchar);
 void deadMob(uchar, uchar);
 void initBomb(void);
+void clearObjTbl(void);
 
 /*
     フレームワークから呼ばれる関数群
@@ -83,6 +84,7 @@ void user_init(void)
     bomb.obj_id = ID_BOMB;
 
 
+    clearObjTbl();
     initField();
     initPlayer(2, 2);
     bornMob(4, 4);
@@ -444,4 +446,15 @@ void initBomb(){
 void mvObject(uchar src_x, uchar src_y, uchar dist_x, uchar dist_y, uchar obj_id){
     if(rmObject(src_x, src_y, obj_id))
         setObject(dist_x, dist_y, obj_id);
+}
+
+// オブジェクトテーブルをクリア
+void clearObjTbl(){
+    uchar i, j;
+
+    for(i=0; i<FIELD_SZ; i++){
+        for(j=0; j<FIELD_SZ; j++){
+            obj_tbl[j][i] = ID_PASSAGE;
+        }
+    }
 }

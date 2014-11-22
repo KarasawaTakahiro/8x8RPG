@@ -11,7 +11,6 @@ ISR(TIMER0_COMPA_vect)
 {
     unsigned char sc;
     // 2mSごとにLED走査
-    flash = ((PORTB >> 3) & 1);
     PORTB = 0;
     scan = (scan + 1) & 7;
     sc = ~(1 << scan);

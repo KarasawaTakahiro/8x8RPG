@@ -16,6 +16,7 @@ typedef struct mob_s{
     uchar x;
     uchar y;
     uchar hp;
+    uchar dir;
     uchar obj_id;
 } mob_t;
 
@@ -43,7 +44,8 @@ volatile uchar obj_tbl[FIELD_SZ][FIELD_SZ] = {{0}};
 volatile player_t player;
 volatile uchar marker_f;
 volatile bomb_t bomb;
-volatile mob_t mob;
+mob_t mob;
+volatile uchar playerMove_f;
 
 volatile uchar print = 0x00;
 volatile uchar print1 = 0x00;
@@ -68,6 +70,7 @@ void hitMob(uchar, uchar, uchar);
 void hitPlayer(uchar);
 void deadMob(uchar, uchar);
 void initBomb(void);
+void mobMove(mob_t*);
 void clearObjTbl(void);
 
 /*
@@ -87,16 +90,20 @@ void user_init(void)
     clearObjTbl();
     initField();
     initPlayer(2, 2);
-    bornMob(4, 4);
+    playerMove_f = UNMOVE;
+    bornMob(4, 3);
 }
 /*
     ユーザ処理
  */
 void user_main(void)
 {
+    playerMove_f = UNMOVE;   // プレイヤーの行動フラグをリセット
     MoveEnemy();
     MoveBullet();
     MoveFort();
+    if(playerMove_f == MOVED)
+        mobMove(&mob);
     UpdateLED();
 }
 /*
@@ -120,12 +127,14 @@ static void MoveFort(void) {
         case 1:
             if(searchFront(player.x, player.y, player.dir) == ID_PASSAGE)
                 walk();
+            playerMove_f = MOVED;
             break;
         case 2:
             changeDirection();
             break;
         case 3:
             setBomb();
+            playerMove_f = MOVED;
             break;
     }
 }
@@ -139,9 +148,11 @@ static void UpdateLED(void)
     // 方向
     showMarker();
 
-    led[0] = print;
-    led[1] = mob.hp;
-    //led[6] = flash;
+    led[0] = (player.x << 4) | player.y;
+    led[1] = (mob.x << 4) | mob.y;
+    led[6] = print2;//mob.dir;
+    led[7] = print1;
+    //print2 = 0;
 }
 
 /*
@@ -174,7 +185,7 @@ void convObjToField(){
         row = 0x0000;                           // フィールドの１行
         for(x=0; x<FIELD_SZ; x++){              // 各行の値を参照
             row <<= 1;                          // 列送り
-            if(obj_tbl[y][x] == ID_MOB)     // オブジェクトが存在したら
+            if(obj_tbl[y][x] == ID_MOB)         // MOBが存在したら
                 row |= (uint)flash;
             else if(obj_tbl[y][x] != ID_PASSAGE)     // オブジェクトが存在したら
                 row ++;                         // フィールドに反映
@@ -229,7 +240,7 @@ void showMarker(){
         case 3: led[2] |= 0x10;    // 下
             break;
         }
-        led[7] = player.dir;
+        //led[7] = player.dir;
     }
 }
 
@@ -370,6 +381,7 @@ void bornMob(uchar x, uchar y){
     mob.x = x;
     mob.y = y;
     mob.hp = MOB_HP;
+    mob.dir = DIR_UP;
     mob.obj_id = ID_MOB;
 
     setObject(x, y, mob.obj_id);
@@ -378,7 +390,7 @@ void bornMob(uchar x, uchar y){
 void initPlayer(uchar x, uchar y){
     player.x = x;
     player.y = y;
-    player.dir = 0;
+    player.dir = DIR_RIGHT;
     player.hp = PLAYER_MAX_HP;
     player.obj_id = ID_PLAYER;
 
@@ -446,6 +458,66 @@ void initBomb(){
 void mvObject(uchar src_x, uchar src_y, uchar dist_x, uchar dist_y, uchar obj_id){
     if(rmObject(src_x, src_y, obj_id))
         setObject(dist_x, dist_y, obj_id);
+}
+
+// MOBの攻撃
+void mobAttack(){
+}
+
+// mobの進行方向を決める
+void mobChangeDirection(mob_t* m){
+    signed char dx = (*m).x - player.x;
+    signed char dy = (*m).y - player.y;
+
+    if(dx < 0){
+        dx *= (-1);
+        if(dy < 0){
+            dy *= (-1);
+            if(dx < dy) m->dir = DIR_UP;
+            else if(dy <= dx) m->dir = DIR_RIGHT;
+        }else if(0 <= dy){
+            if(dx < dy) m->dir = DIR_DOWN;
+            else if(dy <= dx) m->dir = DIR_RIGHT;
+        }
+    }else if(0 <= dx){
+        if(dy < 0){
+            dy *= (-1);
+            if(dx < dy) m->dir = DIR_UP;
+            else if(dy <= dx) m->dir = DIR_LEFT;
+        }else if(0 <= dy){
+            if(dx < dy) m->dir = DIR_DOWN;
+            else if(dy <= dx) m->dir = DIR_LEFT;
+        }
+    }
+}
+
+// MOBの移動
+void mobMove(mob_t *m){
+    uchar x, y;
+
+    mobChangeDirection(m);
+    print2 = (m->dir << 4);
+    print2 |= searchFront(m->x, m->y, m->dir);
+
+    if(searchFront(m->x, m->y, m->dir) == ID_PASSAGE){
+
+        x = m->x;
+        y = m->y;
+
+        switch(m->dir){
+            case DIR_RIGHT: m->x++;  // 右
+                            break;
+            case DIR_UP: (m->y)++;     // 上
+                         print1 = m->y;
+                         break;
+            case DIR_LEFT: m->x--;   // 左
+                           break;
+            case DIR_DOWN: m->y--;   // 下
+                           break;
+        }
+
+        mvObject(x, y, m->x, m->y, m->obj_id);
+    }
 }
 
 // オブジェクトテーブルをクリア

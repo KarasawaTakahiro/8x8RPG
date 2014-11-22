@@ -309,9 +309,13 @@ void setObject(uchar x, uchar y, uchar obj_id){
 }
 
 // オブジェクトテーブルの座標から指定したオブジェクトを削除する
-void rmObject(uchar x, uchar y, uchar obj_id){
-    if(obj_tbl[y][x] == obj_id)
+uchar rmObject(uchar x, uchar y, uchar obj_id){
+    if(obj_tbl[y][x] == obj_id){
         obj_tbl[y][x] = ID_PASSAGE;
+        return 1;
+    }else{
+        return 0;
+    }
 }
 
 // 爆弾を置く
@@ -438,6 +442,12 @@ void initBomb(){
     bomb.atack = BOMB_ATACK;
     bomb.obj_id = ID_BOMB;
     bomb.set = 0;
+}
+
+// オブジェクトを移動する
+void mvObject(uchar src_x, uchar src_y, uchar dist_x, uchar dist_y, uchar obj_id){
+    if(rmObject(src_x, src_y, obj_id))
+        setObject(dist_x, dist_y, obj_id);
 }
 
 // MOBの攻撃

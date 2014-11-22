@@ -3,11 +3,16 @@
 #define FIELD_SZ 16     // ゲームフィールドサイズ
 #define FIELD_MAX FIELD_SZ-1
 // ダンジョンの状態 オブジェクトID
-#define ID_PASSAGE 0     // 通路
-#define ID_WALL 1     // 壁
-#define ID_PLAYER 2
-#define ID_MOB 3
-#define ID_BOMB 4
+#define ID_PASSAGE  0     // 通路
+#define ID_WALL     1     // 壁
+#define ID_PLAYER   2
+#define ID_MOB      3
+#define ID_BOMB     4
+// 方向の定義
+#define DIR_RIGHT   0
+#define DIR_UP      1
+#define DIR_LEFT    2
+#define DIR_DOWN    3
 // プレイヤーの定義
 #define PLAYER_MAX_HP 5
 // マーカーの定義

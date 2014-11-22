@@ -16,6 +16,7 @@ typedef struct mob_s{
     uchar x;
     uchar y;
     uchar hp;
+    uchar dir;
     uchar obj_id;
 } mob_t;
 
@@ -68,6 +69,7 @@ void hitMob(uchar, uchar, uchar);
 void hitPlayer(uchar);
 void deadMob(uchar, uchar);
 void initBomb(void);
+void mobMove(mob_t m);
 
 /*
     フレームワークから呼ばれる関数群
@@ -95,6 +97,7 @@ void user_main(void)
     MoveEnemy();
     MoveBullet();
     MoveFort();
+    mobMove(mob);
     UpdateLED();
 }
 /*
@@ -138,8 +141,8 @@ static void UpdateLED(void)
     showMarker();
 
     led[0] = print;
-    led[1] = mob.hp;
-    //led[6] = flash;
+    led[1] = (mob.x << 4) | mob.y;
+    led[6] = print2;
 }
 
 /*
@@ -364,6 +367,7 @@ void bornMob(uchar x, uchar y){
     mob.x = x;
     mob.y = y;
     mob.hp = MOB_HP;
+    mob.dir = DIR_UP;
     mob.obj_id = ID_MOB;
 
     setObject(x, y, mob.obj_id);
@@ -434,4 +438,51 @@ void initBomb(){
     bomb.atack = BOMB_ATACK;
     bomb.obj_id = ID_BOMB;
     bomb.set = 0;
+}
+
+// MOBの攻撃
+void mobAttack(){
+}
+
+// mobの進行方向を決める
+void mobChangeDirection(mob_t m){
+    signed char dx = player.x - m.x;
+    signed char dy = player.y - m.y;
+
+    if(dx < 0){
+        dx *= (-1);
+        if(dy < 0){
+            dy *= (-1);
+            if(dx < dy) m.dir = DIR_DOWN;
+            else if(dy < dx) m.dir = DIR_LEFT;
+        }else if(0 < dy){
+            if(dx < dy) m.dir = DIR_UP;
+            else if(dy < dx) m.dir = DIR_LEFT;
+        }
+    }else if(0 < dx){
+        if(dy < 0){
+            dy *= (-1);
+            if(dx < dy) m.dir = DIR_DOWN;
+            else if(dy < dx) m.dir = DIR_RIGHT;
+        }else if(0 < dy){
+            if(dx < dy) m.dir = DIR_UP;
+            else if(dy < dx) m.dir = DIR_RIGHT;
+        }
+    }
+}
+
+// MOBの移動
+void mobMove(mob_t m){
+    mobChangeDirection(m);
+    if(searchFront(m.x, m.y, m.dir) != ID_PASSAGE) return;
+    switch(m.dir){
+        case DIR_RIGHT: m.x++;  // 右
+            break;
+        case DIR_UP: m.y++;     // 上
+            break;
+        case DIR_LEFT: m.x--;   // 左
+            break;
+        case DIR_DOWN: m.y--;   // 下
+            break;
+    }
 }

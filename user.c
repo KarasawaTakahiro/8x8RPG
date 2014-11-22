@@ -71,6 +71,7 @@ void hitPlayer(uchar);
 void deadMob(uchar, uchar);
 void initBomb(void);
 void mobMove(mob_t*);
+void mvObject(uchar src_x, uchar src_y, uchar dist_x, uchar dist_y, uchar obj_id);
 
 /*
     フレームワークから呼ばれる関数群
@@ -146,7 +147,7 @@ static void UpdateLED(void)
     // 方向
     showMarker();
 
-    led[0] = (player.x << 4) | player.y;
+    led[0] = obj_tbl[player.y][player.x];//(player.x << 4) | player.y;
     led[1] = (mob.x << 4) | mob.y;
     led[6] = print2;//mob.dir;
     led[7] = print1;
@@ -212,6 +213,9 @@ uchar searchFront(uchar x, uchar y, uchar dir){
     directionに従ってプレイヤーの座標を更新する
 */
 void walk(){
+    uchar x = player.x;
+    uchar y = player.y;
+
     switch(player.dir){
         case 0: player.x++;    // 右
             break;
@@ -222,6 +226,7 @@ void walk(){
         case 3: player.y--;    // 下
             break;
     }
+    mvObject(x, y, player.x, player.y, player.obj_id);
     marker_f = MARKER_HIDE;
 }
 
@@ -391,6 +396,7 @@ void initPlayer(uchar x, uchar y){
     player.dir = DIR_RIGHT;
     player.hp = PLAYER_MAX_HP;
     player.obj_id = ID_PLAYER;
+    setObject(player.x, player.y, player.obj_id);
 
     marker_f = MARKER_SHOW;
 
@@ -494,6 +500,7 @@ void mobMove(mob_t *m){
     uchar x, y;
 
     mobChangeDirection(m);
+
     print2 = (m->dir << 4);
     print2 |= searchFront(m->x, m->y, m->dir);
 

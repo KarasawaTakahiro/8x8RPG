@@ -45,6 +45,7 @@ volatile player_t player;
 volatile uchar marker_f;
 volatile bomb_t bomb;
 volatile mob_t mob;
+volatile uchar playerMove_f;
 
 volatile uchar print = 0x00;
 volatile uchar print1 = 0x00;
@@ -87,6 +88,7 @@ void user_init(void)
 
     initField();
     initPlayer(2, 2);
+    playerMove_f = UNMOVE;
     bornMob(4, 4);
 }
 /*
@@ -94,10 +96,12 @@ void user_init(void)
  */
 void user_main(void)
 {
+    playerMove_f = UNMOVE;   // プレイヤーの行動フラグをリセット
     MoveEnemy();
     MoveBullet();
     MoveFort();
-    mobMove(mob);
+    if(playerMove_f == MOVED)
+        mobMove(mob);
     UpdateLED();
 }
 /*
@@ -121,12 +125,14 @@ static void MoveFort(void) {
         case 1:
             if(searchFront(player.x, player.y, player.dir) == ID_PASSAGE)
                 walk();
+            playerMove_f = MOVED;
             break;
         case 2:
             changeDirection();
             break;
         case 3:
             setBomb();
+            playerMove_f = MOVED;
             break;
     }
 }
@@ -140,9 +146,9 @@ static void UpdateLED(void)
     // 方向
     showMarker();
 
-    led[0] = print;
+    led[0] = (player.x << 4) | player.y;
     led[1] = (mob.x << 4) | mob.y;
-    led[6] = print2;
+    led[6] = flash;
 }
 
 /*
@@ -175,7 +181,7 @@ void convObjToField(){
         row = 0x0000;                           // フィールドの１行
         for(x=0; x<FIELD_SZ; x++){              // 各行の値を参照
             row <<= 1;                          // 列送り
-            if(obj_tbl[y][x] == ID_MOB)     // オブジェクトが存在したら
+            if(obj_tbl[y][x] == ID_MOB)         // MOBが存在したら
                 row |= (uint)flash;
             else if(obj_tbl[y][x] != ID_PASSAGE)     // オブジェクトが存在したら
                 row ++;                         // フィールドに反映
@@ -483,8 +489,14 @@ void mobChangeDirection(mob_t m){
 
 // MOBの移動
 void mobMove(mob_t m){
+    uchar x, y;
+
     mobChangeDirection(m);
     if(searchFront(m.x, m.y, m.dir) != ID_PASSAGE) return;
+
+    x = m.x;
+    y = m.y;
+
     switch(m.dir){
         case DIR_RIGHT: m.x++;  // 右
             break;
@@ -495,4 +507,6 @@ void mobMove(mob_t m){
         case DIR_DOWN: m.y--;   // 下
             break;
     }
+
+    mvObject(x, y, m.x, m.y, m.obj_id);
 }

@@ -26,6 +26,9 @@
 #define MOB_ACTIVE 1
 #define MOB_ATACK 1
 #define MOB_HP 3
+// 雑多定義
+#define MOVED 1
+#define UNMOVE 0
 typedef unsigned char uchar;    // 1byte
 typedef unsigned int  uint;     // 2byte
 //typedef unsigned long ulong;    // 4byte

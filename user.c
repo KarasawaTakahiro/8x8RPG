@@ -44,7 +44,7 @@ volatile uchar obj_tbl[FIELD_SZ][FIELD_SZ] = {{0}};
 volatile player_t player;
 volatile uchar marker_f;
 volatile bomb_t bomb;
-volatile mob_t mob;
+mob_t mob;
 volatile uchar playerMove_f;
 
 volatile uchar print = 0x00;
@@ -70,7 +70,7 @@ void hitMob(uchar, uchar, uchar);
 void hitPlayer(uchar);
 void deadMob(uchar, uchar);
 void initBomb(void);
-void mobMove(mob_t m);
+void mobMove(mob_t*);
 
 /*
     フレームワークから呼ばれる関数群
@@ -89,7 +89,7 @@ void user_init(void)
     initField();
     initPlayer(2, 2);
     playerMove_f = UNMOVE;
-    bornMob(4, 4);
+    bornMob(4, 3);
 }
 /*
     ユーザ処理
@@ -101,7 +101,7 @@ void user_main(void)
     MoveBullet();
     MoveFort();
     if(playerMove_f == MOVED)
-        mobMove(mob);
+        mobMove(&mob);
     UpdateLED();
 }
 /*
@@ -148,7 +148,9 @@ static void UpdateLED(void)
 
     led[0] = (player.x << 4) | player.y;
     led[1] = (mob.x << 4) | mob.y;
-    led[6] = flash;
+    led[6] = print2;//mob.dir;
+    led[7] = print1;
+    //print2 = 0;
 }
 
 /*
@@ -236,7 +238,7 @@ void showMarker(){
         case 3: led[2] |= 0x10;    // 下
             break;
         }
-        led[7] = player.dir;
+        //led[7] = player.dir;
     }
 }
 
@@ -386,7 +388,7 @@ void bornMob(uchar x, uchar y){
 void initPlayer(uchar x, uchar y){
     player.x = x;
     player.y = y;
-    player.dir = 0;
+    player.dir = DIR_RIGHT;
     player.hp = PLAYER_MAX_HP;
     player.obj_id = ID_PLAYER;
 
@@ -461,52 +463,57 @@ void mobAttack(){
 }
 
 // mobの進行方向を決める
-void mobChangeDirection(mob_t m){
-    signed char dx = player.x - m.x;
-    signed char dy = player.y - m.y;
+void mobChangeDirection(mob_t* m){
+    signed char dx = (*m).x - player.x;
+    signed char dy = (*m).y - player.y;
 
     if(dx < 0){
         dx *= (-1);
         if(dy < 0){
             dy *= (-1);
-            if(dx < dy) m.dir = DIR_DOWN;
-            else if(dy < dx) m.dir = DIR_LEFT;
-        }else if(0 < dy){
-            if(dx < dy) m.dir = DIR_UP;
-            else if(dy < dx) m.dir = DIR_LEFT;
+            if(dx < dy) m->dir = DIR_UP;
+            else if(dy <= dx) m->dir = DIR_RIGHT;
+        }else if(0 <= dy){
+            if(dx < dy) m->dir = DIR_DOWN;
+            else if(dy <= dx) m->dir = DIR_RIGHT;
         }
-    }else if(0 < dx){
+    }else if(0 <= dx){
         if(dy < 0){
             dy *= (-1);
-            if(dx < dy) m.dir = DIR_DOWN;
-            else if(dy < dx) m.dir = DIR_RIGHT;
-        }else if(0 < dy){
-            if(dx < dy) m.dir = DIR_UP;
-            else if(dy < dx) m.dir = DIR_RIGHT;
+            if(dx < dy) m->dir = DIR_UP;
+            else if(dy <= dx) m->dir = DIR_LEFT;
+        }else if(0 <= dy){
+            if(dx < dy) m->dir = DIR_DOWN;
+            else if(dy <= dx) m->dir = DIR_LEFT;
         }
     }
 }
 
 // MOBの移動
-void mobMove(mob_t m){
+void mobMove(mob_t *m){
     uchar x, y;
 
     mobChangeDirection(m);
-    if(searchFront(m.x, m.y, m.dir) != ID_PASSAGE) return;
+    print2 = (m->dir << 4);
+    print2 |= searchFront(m->x, m->y, m->dir);
 
-    x = m.x;
-    y = m.y;
+    if(searchFront(m->x, m->y, m->dir) == ID_PASSAGE){
 
-    switch(m.dir){
-        case DIR_RIGHT: m.x++;  // 右
-            break;
-        case DIR_UP: m.y++;     // 上
-            break;
-        case DIR_LEFT: m.x--;   // 左
-            break;
-        case DIR_DOWN: m.y--;   // 下
-            break;
+        x = m->x;
+        y = m->y;
+
+        switch(m->dir){
+            case DIR_RIGHT: m->x++;  // 右
+                            break;
+            case DIR_UP: (m->y)++;     // 上
+                         print1 = m->y;
+                         break;
+            case DIR_LEFT: m->x--;   // 左
+                           break;
+            case DIR_DOWN: m->y--;   // 下
+                           break;
+        }
+
+        mvObject(x, y, m->x, m->y, m->obj_id);
     }
-
-    mvObject(x, y, m.x, m.y, m.obj_id);
 }

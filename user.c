@@ -12,7 +12,7 @@ typedef struct player_s{
 
 typedef struct mob_s{
     uchar active;
-    uchar atack;
+    uchar attack;
     uchar x;
     uchar y;
     uchar hp;
@@ -24,7 +24,7 @@ typedef struct bomb_s{
     uchar x;
     uchar y;
     uchar timelimit;
-    uchar atack;
+    uchar attack;
     uchar obj_id;
     uchar set;      // 設置済みか
 } bomb_t;
@@ -147,10 +147,10 @@ static void UpdateLED(void)
     // 方向
     showMarker();
 
-    led[0] = obj_tbl[player.y][player.x];//(player.x << 4) | player.y;
-    led[1] = (mob.x << 4) | mob.y;
-    led[6] = print2;//mob.dir;
-    led[7] = print1;
+    //led[0] = obj_tbl[player.y][player.x];//(player.x << 4) | player.y;
+    //led[1] = (mob.x << 4) | mob.y;
+    //led[6] = print2;//mob.dir;
+    led[7] = player.hp;
     //print2 = 0;
 }
 
@@ -360,7 +360,7 @@ void explodeBomb(){
         for(j=-1; j<=1; j++){
             x = bomb.x + j;
             y = bomb.y + i;
-            damage(x, y, bomb.atack);
+            damage(x, y, bomb.attack);
         }
     }
 }
@@ -380,7 +380,7 @@ void timer_1sec_comp(){
 // 敵の設置
 void bornMob(uchar x, uchar y){
     mob.active = MOB_IDLE;
-    mob.atack = MOB_ATACK;
+    mob.attack = MOB_ATACK;
     mob.x = x;
     mob.y = y;
     mob.hp = MOB_HP;
@@ -453,7 +453,7 @@ void deadMob(uchar x, uchar y){
 
 void initBomb(){
     bomb.timelimit = BOMB_TIMELIMIT;
-    bomb.atack = BOMB_ATACK;
+    bomb.attack = BOMB_ATACK;
     bomb.obj_id = ID_BOMB;
     bomb.set = 0;
 }
@@ -465,7 +465,11 @@ void mvObject(uchar src_x, uchar src_y, uchar dist_x, uchar dist_y, uchar obj_id
 }
 
 // MOBの攻撃
-void mobAttack(){
+void mobAttack(mob_t m){
+    uchar fx, fy;
+
+    getFrontCoord(m.x, m.y, m.dir, &fx, &fy);
+    damage(fx, fy, m.attack);
 }
 
 // mobの進行方向を決める
@@ -498,14 +502,15 @@ void mobChangeDirection(mob_t* m){
 // MOBの移動
 void mobMove(mob_t *m){
     uchar x, y;
+    uchar front;
 
     mobChangeDirection(m);
 
     print2 = (m->dir << 4);
     print2 |= searchFront(m->x, m->y, m->dir);
 
-    if(searchFront(m->x, m->y, m->dir) == ID_PASSAGE){
-
+    front = searchFront(m->x, m->y, m->dir);
+    if(front == ID_PASSAGE){
         x = m->x;
         y = m->y;
 
@@ -522,5 +527,7 @@ void mobMove(mob_t *m){
         }
 
         mvObject(x, y, m->x, m->y, m->obj_id);
+    }else if(front == ID_PLAYER){
+        mobAttack(*m);
     }
 }

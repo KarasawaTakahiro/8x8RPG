@@ -42,10 +42,10 @@ extern volatile uchar sw;
 extern volatile uchar led[LED_SZ];
 extern volatile uchar gameover;
 extern volatile uchar flash;
+extern int seed;
 extern void user_init(void);
 extern void user_main(void);
 extern void timer_1sec_comp(void);
 extern void timer_1sec_start(void);
 extern void timer_1sec_stop(void);
-
 

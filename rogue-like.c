@@ -4,8 +4,11 @@
 #include <util/delay.h>
 #include "user.h"
 
+void setSeed();
+
 static volatile unsigned char scan; // led走査
 static volatile unsigned char clk;  // 間引き
+int seed;
 
 ISR(TIMER0_COMPA_vect)
 {
@@ -58,6 +61,7 @@ int main(void)
     TIMSK2 |= (1 << OCIE2A);
 
     // ゲーム初期化
+    setSeed();
     user_init();
     sei();
     for (;;) {
@@ -88,3 +92,6 @@ void timer_1sec_stop(){
     TCNT1 = 0x0000;
 }
 
+void setSeed(){
+    seed = 100;
+}

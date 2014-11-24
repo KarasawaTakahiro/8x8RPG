@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include "user.h"
 #include "dungeon_gen.h"
@@ -18,7 +17,7 @@ void updateRange(uchar x, uchar y, uchar max[2], uchar min[2]){
 }
 
 // 進行方向が残っているかを確認
-uchar scan(uchar map[FIELD_SZ][FIELD_SZ], uchar x, uchar y){
+uchar scanAround(uchar map[FIELD_SZ][FIELD_SZ], uchar x, uchar y){
     if( (map[y][x+2] == ID_PASSAGE || FIELD_SZ-1 <= x+1)
      && (map[y+2][x] == ID_PASSAGE || FIELD_SZ-1 <= y+1)
      && (map[y][x-2] == ID_PASSAGE || x-1 <= 0)
@@ -82,11 +81,18 @@ void dig(uchar map[FIELD_SZ][FIELD_SZ], uchar* x, uchar* y, uchar dir, int* plen
 
 void genDungeon(uchar map[FIELD_SZ][FIELD_SZ]){
     uchar dir, x, y;
-    int plen = 0;
-    int max_plen = FIELD_SZ * FIELD_SZ  * 4 / 9;
+    uint plen = 0;
+    uint max_plen = FIELD_SZ * FIELD_SZ  * 4 / 9;
     uchar max[2], min[2];
 
     srand(seed);
+
+    // 初期化
+    for(y=0; y<FIELD_SZ; y++){
+        for(x=0; x<FIELD_SZ; x++){
+            map[y][x] = ID_WALL;
+        }
+    }
 
     x = (rand() + 1) % FIELD_SZ;
     y = (rand() + 1) % FIELD_SZ;
@@ -97,14 +103,16 @@ void genDungeon(uchar map[FIELD_SZ][FIELD_SZ]){
     max[1] = min[1] = y;
 
     while(plen <= max_plen){
-        if(scan(map, x, y)){
+        if(scanAround(map, x, y)){
             dir = nextDir();
             if(checkdig(map, x, y, dir)){
                 dig(map, &x, &y, dir, &plen, max, min);
             }
+
         }else{
             findBranchPoint(map, &x, &y, max, min);
         }
+
     }
 
 }

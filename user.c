@@ -1,4 +1,5 @@
 #include "user.h"
+#include "dungeon_gen.h"
 
 
 // 構造体
@@ -38,9 +39,10 @@ volatile uchar sw = 0;      // 押しボタン
 volatile uchar led[LED_SZ]; // マトリクスLED
 volatile uchar gameover = 0;// ゲーム終了フラグ
 volatile uchar flash = 0;
+int seed;
 // ローカル変数
 volatile uint field[FIELD_SZ] = {0};
-volatile uchar obj_tbl[FIELD_SZ][FIELD_SZ] = {{0}};
+uchar obj_tbl[FIELD_SZ][FIELD_SZ] = {{0}};
 volatile player_t player;
 volatile uchar marker_f;
 volatile bomb_t bomb;
@@ -151,7 +153,8 @@ static void UpdateLED(void)
 
     //led[0] = obj_tbl[player.y][player.x];//(player.x << 4) | player.y;
     //led[1] = (mob.x << 4) | mob.y;
-    //led[6] = print2;//mob.dir;
+    //led[6] = seed;//print2;
+
     led[7] = player.hp;
     //print2 = 0;
 }
@@ -161,19 +164,8 @@ static void UpdateLED(void)
 */
 // フィールドの初期化
 void initField(){
-    uchar x, y;
 
-    for(y=0; y<FIELD_SZ; y++){
-        for(x=0; x<FIELD_SZ; x++){
-            if(y == 0 || y == FIELD_MAX)
-                obj_tbl[y][x] = ID_WALL;
-            else
-                if(x == 0 || x == FIELD_MAX)
-                    obj_tbl[y][x] = ID_WALL;
-                else
-                    obj_tbl[y][x] == ID_PASSAGE;
-        }
-    }
+    genDungeon(obj_tbl);
 }
 
 // オブジェクトテーブルをフィールドに変換

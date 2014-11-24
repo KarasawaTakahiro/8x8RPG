@@ -8,8 +8,10 @@
 #endif
 
 void deadMob(mob_t*);
-void mobMove(mob_t*);
+void mobMove();
 void mobAttack(mob_t);
 void mobChangeDirection(mob_t*);
 void hitMob(uchar, uchar, uchar);
-void bornMob(uchar, uchar);
+void bornMob();
+void initMob(mob_t*, uchar, uchar);
+void findMob(uchar, uchar, mob_t**);

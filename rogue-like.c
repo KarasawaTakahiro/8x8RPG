@@ -8,6 +8,9 @@
 #define SW ((~PINC >> 4) & 3)
 #define SW_COUNT 30
 
+#define ADCINIT (_BV(ADEN) | 0b110)
+#define ADCSTART (_BV(ADSC) | _BV(ADIF))
+#define ADCBUSY ((ADCSRA & _BV(ADIF)) == 0)
 void setSeed();
 
 static volatile uchar scan; // led走査
@@ -50,6 +53,23 @@ ISR(TIMER2_COMPA_vect){
     flash = flash ? 0 : 1;
 }
 
+
+// 1文字出力
+void _putc(char c){
+    if(c == '\n')
+        _putc('\r');
+        while((UCSR0A & (1 << UDRE0)) == 0)
+            wdt_reset();
+        UDR0 = c;
+}
+void _puts(char *s){
+    unsigned char n=0;
+    while(s[n] != '\0'){
+        _putc(s[n]);
+        n++;
+    }
+}
+
 int main(void)
 {
     /* ポート設定 */
@@ -85,6 +105,11 @@ int main(void)
     wdt_enable(WDTO_2S);
     ADMUX = 0x45;
     ADCSRA = (_BV(ADEN) | 0b110);
+
+    UCSR0B = 0;
+    UCSR0C = 0x06;
+    UBRR0 = 103;
+    UCSR0B = _BV(TXEN0);
 
     // ゲーム初期化
     setSeed();

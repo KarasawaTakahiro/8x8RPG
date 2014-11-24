@@ -26,3 +26,4 @@ extern void timer_1sec_start(void); // 1秒タイマ 開始
 extern void timer_1sec_stop(void);  // 1秒タイマ 停止
 extern void _wdt_reset(void);
 
+extern void _puts(char*);

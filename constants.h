@@ -38,10 +38,11 @@
 #define BOMB_ATACK      2   // 攻撃力
 
 // 敵キャラの定義
-#define MOB_IDLE    0       // 非アクティブ状態
-#define MOB_ACTIVE  1       // アクティブ状態
-#define MOB_ATACK   1       // 攻撃力
-#define MOB_HP      2       // HP
+#define MOB_IDLE        0   // 非アクティブ状態
+#define MOB_ACTIVE      1   // アクティブ状態
+#define MOB_ATACK       0   // 攻撃力
+#define MOB_HP          2   // HP
+#define MOB_BORN_NUM    10  // MOBの出現数
 
 // スイッチ
 #define SW_1 1              // 値

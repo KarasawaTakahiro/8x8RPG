@@ -2,13 +2,14 @@
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
 #include <util/delay.h>
+#include <stdlib.h>
 #include "user.h"
 
 void setSeed();
 
 static volatile unsigned char scan; // led走査
 static volatile unsigned char clk;  // 間引き
-int seed;
+int seed = 1009;
 
 ISR(TIMER0_COMPA_vect)
 {
@@ -93,5 +94,5 @@ void timer_1sec_stop(){
 }
 
 void setSeed(){
-    seed = 100;
+    srand(seed);
 }

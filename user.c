@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "user.h"
 #include "dungeon_gen.h"
 
@@ -39,7 +40,6 @@ volatile uchar sw = 0;      // 押しボタン
 volatile uchar led[LED_SZ]; // マトリクスLED
 volatile uchar gameover = 0;// ゲーム終了フラグ
 volatile uchar flash = 0;
-int seed;
 // ローカル変数
 volatile uint field[FIELD_SZ] = {0};
 uchar obj_tbl[FIELD_SZ][FIELD_SZ] = {{0}};
@@ -65,7 +65,7 @@ void setObject(uchar, uchar, uchar);
 void setBomb(void);
 void convObjToField(void);
 void bornMob(uchar, uchar);
-void initPlayer(uchar, uchar);
+void initPlayer();
 void damage(uchar, uchar, uchar);
 void hitPassage(uchar, uchar, uchar);
 void hitMob(uchar, uchar, uchar);
@@ -86,15 +86,13 @@ void user_init(void)
 {
     gameover = 0;
 
-
     bomb.obj_id = ID_BOMB;
-
 
     clearObjTbl();
     initField();
-    initPlayer(2, 2);
+    initPlayer();
     playerMove_f = UNMOVE;
-    bornMob(4, 3);
+    //bornMob(4, 3);
 }
 /*
     ユーザ処理
@@ -164,8 +162,18 @@ static void UpdateLED(void)
 */
 // フィールドの初期化
 void initField(){
+    uchar x, y;
 
+    // ダンジョンの生成
     genDungeon(obj_tbl);
+
+    // ゴールの設置
+    do{
+        x = rand() % FIELD_SZ;
+        y = rand() % FIELD_SZ;
+    }while(obj_tbl[y][x] != ID_PASSAGE);
+    obj_tbl[y][x] = ID_GOAL;
+
 }
 
 // オブジェクトテーブルをフィールドに変換
@@ -180,7 +188,9 @@ void convObjToField(){
             row <<= 1;                          // 列送り
             if(obj_tbl[y][x] == ID_MOB)         // MOBが存在したら
                 row |= (uint)flash;
-            else if(obj_tbl[y][x] != ID_PASSAGE)     // オブジェクトが存在したら
+            else if(obj_tbl[y][x] == ID_GOAL)   // GOALが存在したら
+                row |= (uint)flash;
+            else if(obj_tbl[y][x] != ID_PASSAGE)    // オブジェクトが存在したら
                 row ++;                         // フィールドに反映
         }
         field[y] = row;                         // 行に当てはめる
@@ -384,7 +394,14 @@ void bornMob(uchar x, uchar y){
     setObject(x, y, mob.obj_id);
 }
 
-void initPlayer(uchar x, uchar y){
+void initPlayer(){
+    uchar x, y;
+
+    do{
+        x = rand() % FIELD_SZ;
+        y = rand() % FIELD_SZ;
+    }while(obj_tbl[y][x] != ID_PASSAGE);
+
     player.x = x;
     player.y = y;
     player.dir = DIR_RIGHT;
@@ -512,7 +529,6 @@ void mobMove(mob_t *m){
             case DIR_RIGHT: m->x++;  // 右
                             break;
             case DIR_UP: (m->y)++;     // 上
-                         print1 = m->y;
                          break;
             case DIR_LEFT: m->x--;   // 左
                            break;
@@ -536,3 +552,4 @@ void clearObjTbl(){
         }
     }
 }
+

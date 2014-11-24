@@ -48,4 +48,5 @@ extern void user_main(void);
 extern void timer_1sec_comp(void);
 extern void timer_1sec_start(void);
 extern void timer_1sec_stop(void);
+extern int seed;
 

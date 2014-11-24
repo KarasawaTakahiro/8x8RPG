@@ -16,6 +16,7 @@
 
 #include "player.h"
 #include "mob.h"
+#include "bomb.h"
 
 // プロトタイプ
 void playerMove(void);
@@ -27,11 +28,9 @@ void showMarker(void);
 void showDungeon(void);
 void getFrontCoord(uchar, uchar, uchar, uchar*, uchar*);
 void setObject(uchar, uchar, uchar);
-void setBomb(void);
 void convObjToField(void);
 void damage(uchar, uchar, uchar);
 void hitPassage(uchar, uchar, uchar);
-void initBomb(void);
 void clearObjTbl(void);
 void mvObject(uchar, uchar, uchar, uchar, uchar);
 uchar rmObject(uchar, uchar, uchar);
@@ -42,3 +41,4 @@ extern volatile player_t player;
 extern volatile uchar marker_f;
 extern volatile uchar playerMove_f;
 extern mob_t mob;
+extern volatile bomb_t bomb;

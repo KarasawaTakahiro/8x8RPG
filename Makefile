@@ -1,5 +1,5 @@
 PROJECT = rogue-like
-OBJECTS = rogue-like.o user.o dungeon_gen.o player.o mob.o
+OBJECTS = rogue-like.o user.o dungeon_gen.o player.o mob.o bomb.o
 
 DEV = /dev/ttyACM0
 #DEV = /dev/ttyS0

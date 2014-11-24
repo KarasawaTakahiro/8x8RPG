@@ -245,40 +245,6 @@ uchar rmObject(uchar x, uchar y, uchar obj_id){
     }
 }
 
-// 爆弾を置く
-void setBomb(){
-    uchar fx, fy;
-
-    // 爆弾を未設置 && 前方の確認
-    if(bomb.set == FALSE && searchFront(player.x, player.y, player.dir) == ID_PASSAGE){   
-        getFrontCoord(player.x, player.y, player.dir, &fx, &fy);
-        bomb.timelimit = BOMB_TIMELIMIT;    // タイムリミットをセット
-        setObject(fx, fy, bomb.obj_id);     // 爆弾を設置
-        bomb.x = fx;
-        bomb.y = fy;
-        bomb.set = TRUE;
-        timer_1sec_start();
-    }
-}
-
-// 爆弾が爆発
-void explodeBomb(){
-    signed char i, j, x, y;
-
-    // 消滅処理
-    bomb.set = FALSE;
-    rmObject(bomb.x, bomb.y, bomb.obj_id);
-
-    // ダメージ処理
-    for(i=-1; i<=1; i++){
-        for(j=-1; j<=1; j++){
-            x = bomb.x + j;
-            y = bomb.y + i;
-            damage(x, y, bomb.attack);
-        }
-    }
-}
-
 void timer_1sec_comp(){
     if(bomb.set){
         print = bomb.timelimit;
@@ -312,13 +278,6 @@ void hitPassage(uchar x, uchar y, uchar val){
     if((0 <  x) && (x < FIELD_MAX) && (0 < y) && (y < FIELD_MAX)){
         rmObject(x, y, ID_PASSAGE);
     }
-}
-
-void initBomb(){
-    bomb.timelimit = BOMB_TIMELIMIT;
-    bomb.attack = BOMB_ATACK;
-    bomb.obj_id = ID_BOMB;
-    bomb.set = FALSE;
 }
 
 // オブジェクトを移動する

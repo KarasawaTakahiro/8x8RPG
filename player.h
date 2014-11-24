@@ -8,9 +8,9 @@
 #include "user.h"
 #endif
 
-void initPlayer(void);
-void goalPlayer(void);
-void hitPlayer(uchar);
-void walkPlayer(void);
-void changeDirectionPlayer(void);
-void playerMove(void);
+void initPlayer(void);              // プレイヤーの値を初期化
+void goalPlayer(void);              // プレイヤーがゴール
+void hitPlayer(uchar);              // プレイヤーへのダメージ
+void walkPlayer(void);              // プレイヤーの移動
+void playerMove(void);              // プレイヤーの行動
+void changeDirectionPlayer(void);   // プレイヤーの移動方向を変更

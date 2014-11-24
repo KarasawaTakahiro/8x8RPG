@@ -52,50 +52,19 @@ void user_init(void)
 void user_main(void)
 {
     playerMove_f = UNMOVE;   // プレイヤーの行動フラグをリセット
-    playerMove();
+    if(pre_sw != sw){
+        pre_sw = sw;
+        playerMove();
+    }
     if(playerMove_f == MOVED)
         mobMove(&mob);
     updateLed();
 }
 
 /*
-    プレイヤーの行動
- */
-static void playerMove(void) {
-    uchar front, fx, fy;
-
-    if(pre_sw != sw){
-        pre_sw = sw;
-        switch(sw){
-            case SW_1:
-                front = searchFront(player.x, player.y, player.dir);
-                if(front ==  ID_PASSAGE){   // 目の前が壁
-                    walk();
-                }else if(front == ID_MOB){  // 目の前が敵
-                    getFrontCoord(player.x, player.y, player.dir, &fx, &fy);
-                    damage(fx, fy, player.attack);
-                }else if(front == ID_GOAL){ // ゴール
-                    goalPlayer();
-                }
-                playerMove_f = MOVED;
-                marker_f = MARKER_HIDE;
-                break;
-            case SW_2:
-                changeDirection();
-                playerMove_f = UNMOVE;
-                break;
-            case SW_3:
-                setBomb();
-                playerMove_f = MOVED;
-                marker_f = MARKER_HIDE;
-                break;
-        }
-    }
-}
-/*
     LED表示の更新
  */
-static void updateLed(void)
+void updateLed(void)
 {
     showDungeon();
     led[3] |= 0x10; // プレイヤーの位置
@@ -173,27 +142,6 @@ uchar searchFront(uchar x, uchar y, uchar dir){
     getFrontCoord(x, y, dir, &fx, &fy);
 
     return obj_tbl[fy][fx];
-}
-
-/*
-    プレイヤーの移動
-    directionに従ってプレイヤーの座標を更新する
-*/
-void walk(){
-    uchar x = player.x;
-    uchar y = player.y;
-
-    switch(player.dir){
-        case 0: player.x++;    // 右
-            break;
-        case 1: player.y++;    // 上
-            break;
-        case 2: player.x--;    // 左
-            break;
-        case 3: player.y--;    // 下
-            break;
-    }
-    mvObject(x, y, player.x, player.y, player.obj_id);
 }
 
 // プレイヤーの進行方向を示すマーカーを表示する
@@ -357,27 +305,6 @@ void bornMob(uchar x, uchar y){
     setObject(x, y, mob.obj_id);
 }
 
-void initPlayer(){
-    uchar x, y;
-
-    do{
-        x = rand() % FIELD_SZ;
-        y = rand() % FIELD_SZ;
-    }while(obj_tbl[y][x] != ID_PASSAGE);
-
-    player.x = x;
-    player.y = y;
-    player.attack = PLAYER_ATTACK;
-    player.dir = DIR_RIGHT;
-    player.max_hp = PLAYER_INIT_HP;
-    player.hp = player.max_hp;
-    player.obj_id = ID_PLAYER;
-    setObject(player.x, player.y, player.obj_id);
-
-    marker_f = MARKER_SHOW;
-
-    initBomb();
-}
 
 // 任意の座標に任意のダメージを与える
 void damage(uchar x, uchar y, uchar value){
@@ -413,15 +340,6 @@ void hitMob(uchar x, uchar y, uchar val){
     }
 }
 
-// プレイヤーへのダメージ
-void hitPlayer(uchar val){
-    if(player.hp <= val){
-        player.hp = 0;
-        gameover = 1;
-    }else{
-        player.hp -= val;
-    }
-}
 
 // MOBの死亡処理
 void deadMob(mob_t* m){
@@ -522,17 +440,3 @@ void clearObjTbl(){
     }
 }
 
-// プレイヤーがゴール
-void goalPlayer(){
-    uchar max = player.max_hp;
-    uchar cur = player.hp;
-
-    user_init();
-
-    player.max_hp = ++max;
-    if(player.max_hp <= PLAYER_MAX_HP)
-        player.max_hp = PLAYER_MAX_HP;
-    player.hp = ++cur;
-
-
-}

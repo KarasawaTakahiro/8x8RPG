@@ -74,7 +74,7 @@ void updateLed(void)
 // 1秒タイマが1秒経過時に呼ばれる
 void timer_1sec_comp(){
     if(bomb.set){                   // 爆弾がセットされている
-        if(bomb.timelimit){         // タイムリミットが残っている
+        if(1 < bomb.timelimit){         // タイムリミットが残っている
             bomb.timelimit --;      // タイムリミット-1
         }else{                      // タイムリミットが残っていない
             explodeBomb();          // 爆発

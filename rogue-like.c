@@ -7,6 +7,7 @@
 
 #define SW ((~PINC >> 4) & 3)
 #define SW_COUNT 30
+#define TIMER_1SEC_MAX 10
 
 #define ADCINIT (_BV(ADEN) | 0b110)
 #define ADCSTART (_BV(ADSC) | _BV(ADIF))
@@ -15,9 +16,13 @@ void setSeed();
 
 static volatile uchar scan; // led走査
 static volatile uchar clk;  // 間引き
+static volatile uchar timer_1sec_counter = 0;
+static volatile uchar timer_1sec_count_f = FALSE;
 int seed;
 volatile uchar wait = 0;    // スイッチ変化時の待ち
 volatile uchar pre_sw;
+
+char s[100];
 
 void sw_update();
 
@@ -42,12 +47,17 @@ ISR(TIMER0_COMPA_vect)
     if (++clk >= 50) {          // 100mSごとに起動
         clk = 0;
         user_main();
+        if(timer_1sec_count_f){
+            timer_1sec_counter ++;
+        }
     }
 }
 
+/*
 ISR(TIMER1_COMPA_vect){
     timer_1sec_comp();
 }
+*/
 
 ISR(TIMER2_COMPA_vect){
     flash = flash ? 0 : 1;
@@ -90,10 +100,12 @@ int main(void)
     TCCR0B = 3;                 // 1/64
     TIMSK0 |= (1 << OCIE0A);    // 割り込み設定
     // 汎用１secタイマ
+    /*
     OCR1A = 7812;
     TCCR1A = 0x00;
     TCCR1B = 0x08;              // CTC
     TIMSK1 |= (1 << OCIE1A);    // 割り込み設定
+    */
     // LED点滅用タイマ
     OCR2A = 20;                 // LED
     OCR2B = 0;                  // sound
@@ -119,6 +131,10 @@ int main(void)
     for (;;) {
         wdt_reset();
         sw_update();
+        if(TIMER_1SEC_MAX <= timer_1sec_counter){
+            timer_1sec_comp();
+            timer_1sec_counter = 0;
+        }
         if(gameover){
             user_init();
         }
@@ -137,12 +153,16 @@ void _sound(uchar tone)
 }
 
 void timer_1sec_start(){
-    TCCR1B |= 0x05;
+    //TCCR1B |= 0x05;
+    timer_1sec_counter = 0;
+    timer_1sec_count_f = TRUE;
 }
 
 void timer_1sec_stop(){
-    TCCR1B &= 0xf8;
-    TCNT1 = 0x0000;
+    //TCCR1B &= 0xf8;
+    //TCNT1 = 0x0000;
+    timer_1sec_count_f = FALSE;
+    timer_1sec_counter = 0;
 }
 
 void setSeed(){

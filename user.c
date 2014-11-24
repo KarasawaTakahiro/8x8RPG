@@ -185,7 +185,8 @@ void initField(){
     uchar x, y;
 
     // ダンジョンの生成
-    //genDungeon(obj_tbl);
+    genDungeon(obj_tbl);
+    /*
     for(y=0; y<FIELD_SZ; y++){
         for(x=0; x<FIELD_SZ; x++){
             if(y == 0 || y == FIELD_SZ-1 || x == 0 || x == FIELD_SZ-1)
@@ -194,6 +195,7 @@ void initField(){
                 obj_tbl[y][x] = ID_PASSAGE;
         }
     }
+    */
 
     // ゴールの設置
     do{

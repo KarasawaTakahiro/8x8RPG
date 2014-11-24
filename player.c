@@ -3,9 +3,9 @@
 
 // グローバル変数
 uchar obj_tbl[FIELD_SZ][FIELD_SZ];
-volatile player_t player;
-volatile uchar marker_f;
-volatile uchar playerMove_f;
+player_t player;
+uchar marker_f;
+uchar playerMove_f;
 
 // プレイヤーの値を初期化
 void initPlayer(){

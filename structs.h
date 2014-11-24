@@ -1,4 +1,7 @@
-// 構造体
+/*
+    構造体
+*/
+
 // プレイヤー
 typedef struct player_s{
     uchar dir;      // 進行方向

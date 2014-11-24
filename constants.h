@@ -1,6 +1,12 @@
-// 定数群
+/*
+    定数群
+*/
+
+// 8x8LEDに関する定義
 #define LED_SZ 8                // 8x8LED
 #define LED_MAX LED_SZ-1        // LEDの最大インデックス値
+
+// フィールドサイズに関する定義
 #define FIELD_SZ 16             // ゲームフィールドサイズ
 #define FIELD_MAX FIELD_SZ-1    // フィールドサイズの最大インデックス値
 

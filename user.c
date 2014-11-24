@@ -475,7 +475,9 @@ void hitPlayer(uchar val){
 }
 
 // MOBの死亡処理
-void deadMob(uchar x, uchar y){
+void deadMob(mob_t* m){
+    m->active = UNMOVE;
+    m->hp = 0;
     rmObject(x, y, ID_MOB);
 }
 

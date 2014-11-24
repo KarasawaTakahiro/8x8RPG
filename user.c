@@ -129,12 +129,6 @@ void convObjToField(){
     }
 }
 
-// プレイヤーの移動方向を変更
-void changeDirection(){
-    player.dir = (player.dir + 1) % 4;
-    marker_f = MARKER_SHOW;
-}
-
 // 前方のオブジェクトIDを返す
 uchar searchFront(uchar x, uchar y, uchar dir){
     uchar fx, fy;

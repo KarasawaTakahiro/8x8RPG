@@ -95,7 +95,7 @@ void playerMove(void) {
             marker_f = MARKER_HIDE;
             break;
         case SW_2:
-            changeDirection();
+            changeDirectionPlayer();
             playerMove_f = UNMOVE;
             break;
         case SW_3:
@@ -104,5 +104,11 @@ void playerMove(void) {
             marker_f = MARKER_HIDE;
             break;
     }
+}
+
+// プレイヤーの移動方向を変更
+void changeDirectionPlayer(){
+    player.dir = (player.dir + 1) % 4;
+    marker_f = MARKER_SHOW;
 }
 

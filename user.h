@@ -19,10 +19,8 @@
 #include "bomb.h"
 
 // プロトタイプ
-void playerMove(void);
 void updateLed(void);
 void initField(void);
-void changeDirection(void);
 uchar searchFront(uchar, uchar, uchar);
 void showMarker(void);
 void showDungeon(void);

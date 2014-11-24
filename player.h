@@ -12,3 +12,5 @@ void initPlayer(void);
 void goalPlayer(void);
 void hitPlayer(uchar);
 void walkPlayer(void);
+void changeDirectionPlayer(void);
+void playerMove(void);

@@ -144,13 +144,16 @@ static void MoveFort(void) {
                     damage(fx, fy, player.attack);
                 }
                 playerMove_f = MOVED;
+                marker_f = MARKER_HIDE;
                 break;
             case 2:
                 changeDirection();
+                playerMove_f = UNMOVE;
                 break;
             case 3:
                 setBomb();
                 playerMove_f = MOVED;
+                marker_f = MARKER_HIDE;
                 break;
         }
     }
@@ -182,6 +185,16 @@ void initField(){
 
     // ダンジョンの生成
     genDungeon(obj_tbl);
+    /*
+    for(y=0; y<FIELD_SZ; y++){
+        for(x=0; x<FIELD_SZ; x++){
+            if(y == 0 || y == FIELD_SZ-1 || x == 0 || x == FIELD_SZ-1)
+                obj_tbl[y][x] = ID_WALL;
+            else
+                obj_tbl[y][x] = ID_PASSAGE;
+        }
+    }
+    */
 
     // ゴールの設置
     do{
@@ -247,7 +260,6 @@ void walk(){
             break;
     }
     mvObject(x, y, player.x, player.y, player.obj_id);
-    marker_f = MARKER_HIDE;
 }
 
 // プレイヤーの進行方向を示すマーカーを表示する
@@ -456,7 +468,7 @@ void hitPassage(uchar x, uchar y, uchar val){
 
 // Mobへのダメージ
 void hitMob(uchar x, uchar y, uchar val){
-    if(mob.hp < val){
+    if(mob.hp <= val){
         mob.hp = 0;
         deadMob(&mob);
     }else{
@@ -466,7 +478,7 @@ void hitMob(uchar x, uchar y, uchar val){
 
 // プレイヤーへのダメージ
 void hitPlayer(uchar val){
-    if(player.hp < val){
+    if(player.hp <= val){
         player.hp = 0;
         gameover = 1;
     }else{
@@ -535,7 +547,7 @@ void mobMove(mob_t *m){
     uchar front;
 
     // 移動可能のMOB
-    if(m->active == MOVED){
+    if(0 < m->hp){
         mobChangeDirection(m);
         front = searchFront(m->x, m->y, m->dir);
         if(front == ID_PASSAGE){

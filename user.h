@@ -15,6 +15,7 @@
 #define DIR_DOWN    3
 // プレイヤーの定義
 #define PLAYER_MAX_HP 5
+#define PLAYER_ATTACK 1
 // マーカーの定義
 #define MARKER_SHOW 1
 #define MARKER_HIDE 0

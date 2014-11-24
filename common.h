@@ -24,4 +24,5 @@ extern void user_main(void);        // ユーザメイン関数
 extern void timer_1sec_comp(void);  // 1秒タイマ 1秒経過時に呼ばれる
 extern void timer_1sec_start(void); // 1秒タイマ 開始
 extern void timer_1sec_stop(void);  // 1秒タイマ 停止
+extern void _wdt_reset(void);
 

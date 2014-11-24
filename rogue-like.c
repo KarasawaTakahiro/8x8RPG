@@ -149,3 +149,7 @@ void sw_update(){
         _delay_ms(1);
     }
 }
+
+void _wdt_reset(){
+    wdt_reset();
+}

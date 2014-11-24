@@ -37,11 +37,12 @@ void damage(uchar, uchar, uchar);       // 任意の座標に任意のダメー�
 void hitWall(uchar, uchar, uchar);      // 壁へのダメージ
 void mvObject(uchar, uchar, uchar, uchar, uchar);   // オブジェクトを移動する
 void clearObjTbl(void);                 // オブジェクトテーブルをクリア
+void getRandomPassagePoint(uchar*, uchar*);         // フィールドからPASSAGEのランダムな1点を得る
 
 // 共通変数
 extern uchar obj_tbl[FIELD_SZ][FIELD_SZ];
 extern player_t player;
 extern uchar marker_f;
 extern uchar playerMove_f;
-extern mob_t mob;
+extern mob_t mob[MOB_BORN_NUM];
 extern bomb_t bomb;

@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "user.h"
 
 /*
@@ -19,7 +20,7 @@ player_t player;                    // プレイヤー
 uchar marker_f;                     // プレイヤーの進行方向を表すマーカーの表示用フラグ
 bomb_t bomb;                        // 爆弾
 uchar playerMove_f;                 // プレイヤーが行動したかを表すフラグ
-mob_t mob;                          // 敵キャラ
+mob_t mob[MOB_BORN_NUM];            // 敵キャラ
 uchar pre_sw;                       // SWの押しっぱなしを無効にするための変数
 
 // デバッグ変数
@@ -44,7 +45,7 @@ void user_init(void)
     clearObjTbl();              // オブジェクトテーブルをクリア
     initField();                // フィールド生成
     initPlayer();               // プレイヤーを初期化
-    bornMob(4, 3);              // MOBの設置
+    bornMob();                  // MOBの設置
 }
 
 // ゲームのメイン処理
@@ -56,7 +57,7 @@ void user_main(void)
         playerMove();           // プレイヤーの行動
     }
     if(playerMove_f == MOVED)   // プレイヤーが動作したら
-        mobMove(&mob);          // MOBの行動
+        mobMove();          // MOBの行動
     updateLed();                // 8x8LED表示の更新
 }
 
@@ -67,11 +68,7 @@ void updateLed(void)
     led[3] |= 0x10;             // プレイヤーの位置を表示
     showMarker();               // 方向を表すマーカーを表示
 
-    led[0] = mob.hp;
-    //led[1] = (mob.x << 4) | mob.y;
-    //led[6] = 
     led[7] = player.hp;
-    //print2 = 0;
 }
 
 // 1秒タイマが1秒経過時に呼ばれる
@@ -95,6 +92,7 @@ void initField(){
     uchar x, y;
 
     genDungeon(obj_tbl);        // ダンジョンの生成
+
     /*
     for(y=0; y<FIELD_SZ; y++){
         for(x=0; x<FIELD_SZ; x++){
@@ -111,7 +109,7 @@ void initField(){
         x = rand() % FIELD_SZ;
         y = rand() % FIELD_SZ;
     }while(obj_tbl[y][x] != ID_PASSAGE);
-    obj_tbl[y][x] = ID_GOAL;
+    //obj_tbl[y][x] = ID_GOAL;
 
 }
 
@@ -328,3 +326,11 @@ void clearObjTbl(){
     }
 }
 
+// フィールドからPASSAGEのランダムな1点を得る
+void getRandomPassagePoint(uchar* x, uchar* y){
+    char s[15];
+    do{
+        *x = rand() % FIELD_SZ;
+        *y = rand() % FIELD_SZ;
+    }while(obj_tbl[*y][*x] != ID_PASSAGE);
+}

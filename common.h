@@ -25,3 +25,4 @@ extern void timer_1sec_comp(void);  // 1秒タイマ 1秒経過時に呼ばれ�
 extern void timer_1sec_start(void); // 1秒タイマ 開始
 extern void timer_1sec_stop(void);  // 1秒タイマ 停止
 
+extern void _puts(char*);

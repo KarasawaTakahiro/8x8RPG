@@ -1,39 +1,11 @@
 #include <stdlib.h>
 #include "user.h"
 #include "dungeon_gen.h"
+#include "structs.h"
+#include "constants.h"
 
 uchar pre_sw;
 
-// 構造体
-typedef struct player_s{
-    uchar dir;
-    uchar x;
-    uchar y;
-    uchar hp;
-    uchar max_hp;
-    uchar attack;
-    uchar obj_id;
-}player_t;
-
-typedef struct mob_s{
-    uchar active;
-    uchar knockback;
-    uchar attack;
-    uchar x;
-    uchar y;
-    uchar hp;
-    uchar dir;
-    uchar obj_id;
-} mob_t;
-
-typedef struct bomb_s{
-    uchar x;
-    uchar y;
-    uchar timelimit;
-    uchar attack;
-    uchar obj_id;
-    uchar set;      // 設置済みか
-} bomb_t;
 // ローカル関数
 static void MoveEnemy(void);
 static void MoveBullet(void);
@@ -374,13 +346,13 @@ void setBomb(){
     uchar fx, fy;
 
     // 爆弾を未設置 && 前方の確認
-    if(bomb.set == 0 && searchFront(player.x, player.y, player.dir) == ID_PASSAGE){   
+    if(bomb.set == FALSE && searchFront(player.x, player.y, player.dir) == ID_PASSAGE){   
         getFrontCoord(player.x, player.y, player.dir, &fx, &fy);
         bomb.timelimit = BOMB_TIMELIMIT;    // タイムリミットをセット
         setObject(fx, fy, bomb.obj_id);     // 爆弾を設置
         bomb.x = fx;
         bomb.y = fy;
-        bomb.set = 1;
+        bomb.set = TRUE;
         timer_1sec_start();
     }
 }
@@ -390,7 +362,7 @@ void explodeBomb(){
     signed char i, j, x, y;
 
     // 消滅処理
-    bomb.set = 0;
+    bomb.set = FALSE;
     rmObject(bomb.x, bomb.y, bomb.obj_id);
 
     // ダメージ処理
@@ -506,7 +478,7 @@ void initBomb(){
     bomb.timelimit = BOMB_TIMELIMIT;
     bomb.attack = BOMB_ATACK;
     bomb.obj_id = ID_BOMB;
-    bomb.set = 0;
+    bomb.set = FALSE;
 }
 
 // オブジェクトを移動する

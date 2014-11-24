@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <stdio.h>
 #include "user.h"
 
 /*
@@ -328,9 +327,9 @@ void clearObjTbl(){
 
 // フィールドからPASSAGEのランダムな1点を得る
 void getRandomPassagePoint(uchar* x, uchar* y){
-    char s[15];
     do{
         *x = rand() % FIELD_SZ;
         *y = rand() % FIELD_SZ;
+        _wdt_reset();
     }while(obj_tbl[*y][*x] != ID_PASSAGE);
 }

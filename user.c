@@ -6,21 +6,21 @@
 */
 
 // グローバル変数
-volatile uchar sw = 0;      // 押しボタン
-volatile uchar led[LED_SZ]; // マトリクスLED
-volatile uchar gameover = 0;// ゲーム終了フラグ
-volatile uchar flash = 0;
-int seed;
+volatile uchar sw = 0;              // 押しボタン
+volatile uchar led[LED_SZ];         // マトリクスLED
+volatile uchar gameover = 0;        // ゲーム終了フラグ
+volatile uchar flash = 0;           // LED点滅用変数
+int seed;                           // SEED値
 
 // ローカル変数
-uint field[FIELD_SZ] = {0};
-uchar obj_tbl[FIELD_SZ][FIELD_SZ] = {{0}};
-player_t player;
-uchar marker_f;
-bomb_t bomb;
-uchar playerMove_f;
-mob_t mob;
-uchar pre_sw;
+uint field[FIELD_SZ];               // フィールド
+uchar obj_tbl[FIELD_SZ][FIELD_SZ];  // オブジェクトテーブル オブジェクトIDを入れる
+player_t player;                    // プレイヤー
+uchar marker_f;                     // プレイヤーの進行方向を表すマーカーの表示用フラグ
+bomb_t bomb;                        // 爆弾
+uchar playerMove_f;                 // プレイヤーが行動したかを表すフラグ
+mob_t mob;                          // 敵キャラ
+uchar pre_sw;                       // SWの押しっぱなしを無効にするための変数
 
 // デバッグ変数
 volatile uchar print = 0x00;
@@ -35,19 +35,16 @@ volatile uchar print2 = 0x00;
 // ゲームの初期化
 void user_init(void)
 {
-    pre_sw = sw;
-    gameover = 0;
+    pre_sw = sw;                // スイッチの初期化
+    gameover = FALSE;           // ゲームオーバーフラグ
 
-    srand(seed);
-    seed = rand();
+    srand(seed);                // シード値の設定
+    seed = rand();              // 次のシード値を設定
 
-    bomb.obj_id = ID_BOMB;
-
-    clearObjTbl();
-    initField();
-    initPlayer();
-    playerMove_f = UNMOVE;
-    bornMob(4, 3);
+    clearObjTbl();              // オブジェクトテーブルをクリア
+    initField();                // フィールド生成
+    initPlayer();               // プレイヤーを初期化
+    bornMob(4, 3);              // MOBの設置
 }
 
 // ゲームのメイン処理

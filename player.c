@@ -26,6 +26,7 @@ void initPlayer(){
     setObject(player.x, player.y, player.obj_id);
 
     marker_f = MARKER_SHOW;
+    playerMove_f = UNMOVE;      // プレイヤーの動作フラグをOFF
 
     initBomb();
 }

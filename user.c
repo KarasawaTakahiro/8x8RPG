@@ -73,7 +73,7 @@ void damage(uchar, uchar, uchar);
 void hitPassage(uchar, uchar, uchar);
 void hitMob(uchar, uchar, uchar);
 void hitPlayer(uchar);
-void deadMob(uchar, uchar);
+void deadMob(mob_t*);
 void initBomb(void);
 void mobMove(mob_t*);
 void clearObjTbl(void);
@@ -98,7 +98,7 @@ void user_init(void)
     initField();
     initPlayer();
     playerMove_f = UNMOVE;
-    //bornMob(4, 3);
+    bornMob(4, 3);
 }
 /*
     ユーザ処理
@@ -458,7 +458,7 @@ void hitPassage(uchar x, uchar y, uchar val){
 void hitMob(uchar x, uchar y, uchar val){
     if(mob.hp < val){
         mob.hp = 0;
-        deadMob(x, y);
+        deadMob(&mob);
     }else{
         mob.hp -= val;
     }
@@ -478,7 +478,7 @@ void hitPlayer(uchar val){
 void deadMob(mob_t* m){
     m->active = UNMOVE;
     m->hp = 0;
-    rmObject(x, y, ID_MOB);
+    rmObject(m->x, m->y, ID_MOB);
 }
 
 void initBomb(){
@@ -534,30 +534,33 @@ void mobMove(mob_t *m){
     uchar x, y;
     uchar front;
 
-    mobChangeDirection(m);
+    // 移動可能のMOB
+    if(m->active == MOVED){
+        mobChangeDirection(m);
 
-    print2 = (m->dir << 4);
-    print2 |= searchFront(m->x, m->y, m->dir);
+        print2 = (m->dir << 4);
+        print2 |= searchFront(m->x, m->y, m->dir);
 
-    front = searchFront(m->x, m->y, m->dir);
-    if(front == ID_PASSAGE){
-        x = m->x;
-        y = m->y;
+        front = searchFront(m->x, m->y, m->dir);
+        if(front == ID_PASSAGE){
+            x = m->x;
+            y = m->y;
 
-        switch(m->dir){
-            case DIR_RIGHT: m->x++;  // 右
-                            break;
-            case DIR_UP: (m->y)++;     // 上
-                         break;
-            case DIR_LEFT: m->x--;   // 左
-                           break;
-            case DIR_DOWN: m->y--;   // 下
-                           break;
+            switch(m->dir){
+                case DIR_RIGHT: m->x++;  // 右
+                                break;
+                case DIR_UP: (m->y)++;     // 上
+                             break;
+                case DIR_LEFT: m->x--;   // 左
+                               break;
+                case DIR_DOWN: m->y--;   // 下
+                               break;
+            }
+
+            mvObject(x, y, m->x, m->y, m->obj_id);
+        }else if(front == ID_PLAYER){
+            mobAttack(*m);
         }
-
-        mvObject(x, y, m->x, m->y, m->obj_id);
-    }else if(front == ID_PLAYER){
-        mobAttack(*m);
     }
 }
 

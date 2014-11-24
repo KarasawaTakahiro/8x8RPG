@@ -2,6 +2,7 @@
 #include "user.h"
 #include "dungeon_gen.h"
 
+uchar pre_sw;
 
 // 構造体
 typedef struct player_s{
@@ -85,6 +86,7 @@ void mvObject(uchar src_x, uchar src_y, uchar dist_x, uchar dist_y, uchar obj_id
  */
 void user_init(void)
 {
+    pre_sw = sw;
     gameover = 0;
 
     srand(seed);
@@ -127,19 +129,22 @@ static void MoveBullet(void)
     プレイヤーの行動
  */
 static void MoveFort(void) {
-    switch(sw){
-        case 1:
-            if(searchFront(player.x, player.y, player.dir) == ID_PASSAGE)
-                walk();
-            playerMove_f = MOVED;
-            break;
-        case 2:
-            changeDirection();
-            break;
-        case 3:
-            setBomb();
-            playerMove_f = MOVED;
-            break;
+    if(pre_sw != sw){
+        pre_sw = sw;
+        switch(sw){
+            case SW_1:
+                if(searchFront(player.x, player.y, player.dir) == ID_PASSAGE)
+                    walk();
+                playerMove_f = MOVED;
+                break;
+            case SW_2:
+                changeDirection();
+                break;
+            case SW_3:
+                setBomb();
+                playerMove_f = MOVED;
+                break;
+        }
     }
 }
 /*

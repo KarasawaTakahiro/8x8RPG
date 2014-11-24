@@ -5,11 +5,26 @@
 #include <stdlib.h>
 #include "user.h"
 
+#define SW ((~PINC >> 4) & 3)
+#define SW_COUNT 30
+
 void setSeed();
 
-static volatile unsigned char scan; // led走査
-static volatile unsigned char clk;  // 間引き
+static volatile uchar scan; // led走査
+static volatile uchar clk;  // 間引き
 int seed;
+volatile uchar wait = 0;    // スイッチ変化時の待ち
+volatile uchar pre_sw;
+
+void sw_update();
+
+ISR(PCINT1_vect){
+    if(wait == 0){
+        wait = 30;
+    }
+    // ブロックしているピン変化割り込み要求をキャンセル
+    PCIFR |= _BV(PCIF1);
+}
 
 ISR(TIMER0_COMPA_vect)
 {
@@ -23,7 +38,6 @@ ISR(TIMER0_COMPA_vect)
     PORTB = led[scan];
     if (++clk >= 50) {          // 100mSごとに起動
         clk = 0;
-        sw = (~PINC >> 4) & 3;  // スイッチよみ
         user_main();
     }
 }
@@ -45,6 +59,10 @@ int main(void)
     PORTB = 0x00;
     PORTC = 0x00;
     PORTD = 0x00;
+    // ポートCのピン変化割り込みを有効
+    PCICR = _BV(PCIE1);
+    // 割り込みを認めるビット位置を指定する
+    PCMSK1 = _BV(PCINT12) | _BV(PCINT13);
     //  タイマ・カウンタ設定
     // タイマ割り込み設定
     OCR0A = 249;                // 2mS
@@ -70,10 +88,12 @@ int main(void)
 
     // ゲーム初期化
     setSeed();
+    pre_sw = sw = SW;
     user_init();
     sei();
     for (;;) {
         wdt_reset();
+        sw_update();
         if(gameover){
             user_init();
         }
@@ -118,4 +138,14 @@ void setSeed(){
     srand(seed);
     DDRC = ddrc;
     DIDR0 &= ~_BV(ADC5D);   // デジタル入力有効
+}
+
+void sw_update(){
+    // スイッチ変化時に30ms待ってからもう1回読み取る
+    if(wait > 0){
+        if(--wait == 0){
+            sw = SW;
+        }
+        _delay_ms(1);
+    }
 }

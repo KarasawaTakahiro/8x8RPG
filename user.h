@@ -27,6 +27,10 @@
 #define MOB_ACTIVE 1
 #define MOB_ATACK 1
 #define MOB_HP 3
+// スイッチ
+#define SW_1 1
+#define SW_2 2
+#define SW_3 3
 // 雑多定義
 #define MOVED 1
 #define UNMOVE 0

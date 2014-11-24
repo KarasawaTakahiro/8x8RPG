@@ -108,7 +108,7 @@ void initField(){
         x = rand() % FIELD_SZ;
         y = rand() % FIELD_SZ;
     }while(obj_tbl[y][x] != ID_PASSAGE);
-    //obj_tbl[y][x] = ID_GOAL;
+    obj_tbl[y][x] = ID_GOAL;
 
 }
 

@@ -98,7 +98,7 @@ void user_init(void)
     initField();
     initPlayer();
     playerMove_f = UNMOVE;
-    //bornMob(4, 3);
+    bornMob(4, 3);
 }
 /*
     ユーザ処理
@@ -137,9 +137,9 @@ static void MoveFort(void) {
         switch(sw){
             case 1:
                 front = searchFront(player.x, player.y, player.dir);
-                if(front ==  ID_PASSAGE){
+                if(front ==  ID_PASSAGE){   // 目の前が壁
                     walk();
-                }else if(front == ID_MOB){
+                }else if(front == ID_MOB){  // 目の前が敵
                     getFrontCoord(player.x, player.y, player.dir, &fx, &fy);
                     damage(fx, fy, player.attack);
                 }
@@ -165,7 +165,7 @@ static void UpdateLED(void)
     // 方向
     showMarker();
 
-    //led[0] = obj_tbl[player.y][player.x];//(player.x << 4) | player.y;
+    led[0] = mob.hp;
     //led[1] = (mob.x << 4) | mob.y;
     //led[6] = 
 
@@ -533,9 +533,6 @@ void mobMove(mob_t *m){
     uchar front;
 
     mobChangeDirection(m);
-
-    print2 = (m->dir << 4);
-    print2 |= searchFront(m->x, m->y, m->dir);
 
     front = searchFront(m->x, m->y, m->dir);
     if(front == ID_PASSAGE){

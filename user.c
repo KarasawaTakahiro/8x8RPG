@@ -2,6 +2,7 @@
 #include "user.h"
 #include "dungeon_gen.h"
 
+uchar pre_sw;
 
 // 構造体
 typedef struct player_s{
@@ -41,6 +42,7 @@ volatile uchar sw = 0;      // 押しボタン
 volatile uchar led[LED_SZ]; // マトリクスLED
 volatile uchar gameover = 0;// ゲーム終了フラグ
 volatile uchar flash = 0;
+int seed;
 // ローカル変数
 volatile uint field[FIELD_SZ] = {0};
 uchar obj_tbl[FIELD_SZ][FIELD_SZ] = {{0}};
@@ -85,7 +87,10 @@ void mvObject(uchar src_x, uchar src_y, uchar dist_x, uchar dist_y, uchar obj_id
  */
 void user_init(void)
 {
+    pre_sw = sw;
     gameover = 0;
+
+    srand(seed);
 
     bomb.obj_id = ID_BOMB;
 
@@ -127,24 +132,27 @@ static void MoveBullet(void)
 static void MoveFort(void) {
     uchar front, fx, fy;
 
-    switch(sw){
-        case 1:
-            front = searchFront(player.x, player.y, player.dir);
-            if(front ==  ID_PASSAGE){
-                walk();
-            }else if(front == ID_MOB){
-                getFrontCoord(player.x, player.y, player.dir, &fx, &fy);
-                damage(fx, fy, player.attack);
-            }
-            playerMove_f = MOVED;
-            break;
-        case 2:
-            changeDirection();
-            break;
-        case 3:
-            setBomb();
-            playerMove_f = MOVED;
-            break;
+    if(pre_sw != sw){
+        pre_sw = sw;
+        switch(sw){
+            case 1:
+                front = searchFront(player.x, player.y, player.dir);
+                if(front ==  ID_PASSAGE){
+                    walk();
+                }else if(front == ID_MOB){
+                    getFrontCoord(player.x, player.y, player.dir, &fx, &fy);
+                    damage(fx, fy, player.attack);
+                }
+                playerMove_f = MOVED;
+                break;
+            case 2:
+                changeDirection();
+                break;
+            case 3:
+                setBomb();
+                playerMove_f = MOVED;
+                break;
+        }
     }
 }
 /*
@@ -159,7 +167,7 @@ static void UpdateLED(void)
 
     //led[0] = obj_tbl[player.y][player.x];//(player.x << 4) | player.y;
     //led[1] = (mob.x << 4) | mob.y;
-    //led[6] = seed;//print2;
+    //led[6] = 
 
     led[7] = player.hp;
     //print2 = 0;

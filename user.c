@@ -10,6 +10,7 @@ typedef struct player_s{
     uchar x;
     uchar y;
     uchar hp;
+    uchar max_hp;
     uchar attack;
     uchar obj_id;
 }player_t;
@@ -79,6 +80,7 @@ void initBomb(void);
 void mobMove(mob_t*);
 void clearObjTbl(void);
 void mvObject(uchar src_x, uchar src_y, uchar dist_x, uchar dist_y, uchar obj_id);
+void goalPlayer();
 
 /*
     フレームワークから呼ばれる関数群
@@ -92,6 +94,7 @@ void user_init(void)
     gameover = 0;
 
     srand(seed);
+    seed = rand();
 
     bomb.obj_id = ID_BOMB;
 
@@ -136,22 +139,24 @@ static void MoveFort(void) {
     if(pre_sw != sw){
         pre_sw = sw;
         switch(sw){
-            case 1:
+            case SW_1:
                 front = searchFront(player.x, player.y, player.dir);
                 if(front ==  ID_PASSAGE){   // 目の前が壁
                     walk();
                 }else if(front == ID_MOB){  // 目の前が敵
                     getFrontCoord(player.x, player.y, player.dir, &fx, &fy);
                     damage(fx, fy, player.attack);
+                }else if(front == ID_GOAL){ // ゴール
+                    goalPlayer();
                 }
                 playerMove_f = MOVED;
                 marker_f = MARKER_HIDE;
                 break;
-            case 2:
+            case SW_2:
                 changeDirection();
                 playerMove_f = UNMOVE;
                 break;
-            case 3:
+            case SW_3:
                 setBomb();
                 playerMove_f = MOVED;
                 marker_f = MARKER_HIDE;
@@ -436,7 +441,8 @@ void initPlayer(){
     player.y = y;
     player.attack = PLAYER_ATTACK;
     player.dir = DIR_RIGHT;
-    player.hp = PLAYER_MAX_HP;
+    player.max_hp = PLAYER_INIT_HP;
+    player.hp = player.max_hp;
     player.obj_id = ID_PLAYER;
     setObject(player.x, player.y, player.obj_id);
 
@@ -588,3 +594,17 @@ void clearObjTbl(){
     }
 }
 
+// プレイヤーがゴール
+void goalPlayer(){
+    uchar max = player.max_hp;
+    uchar cur = player.hp;
+
+    user_init();
+
+    player.max_hp = ++max;
+    if(player.max_hp <= PLAYER_MAX_HP)
+        player.max_hp = PLAYER_MAX_HP;
+    player.hp = ++cur;
+
+
+}

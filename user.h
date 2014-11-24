@@ -15,7 +15,8 @@
 #define DIR_LEFT    2
 #define DIR_DOWN    3
 // プレイヤーの定義
-#define PLAYER_MAX_HP 5
+#define PLAYER_MAX_HP 5     // HPの最大値
+#define PLAYER_INIT_HP 3    // 初期体力
 #define PLAYER_ATTACK 1
 // マーカーの定義
 #define MARKER_SHOW 1
@@ -27,7 +28,7 @@
 #define MOB_IDLE 0
 #define MOB_ACTIVE 1
 #define MOB_ATACK 1
-#define MOB_HP 3
+#define MOB_HP 2
 // スイッチ
 #define SW_1 1
 #define SW_2 2

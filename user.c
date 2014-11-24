@@ -16,6 +16,7 @@ typedef struct player_s{
 
 typedef struct mob_s{
     uchar active;
+    uchar knockback;
     uchar attack;
     uchar x;
     uchar y;
@@ -184,8 +185,7 @@ void initField(){
     uchar x, y;
 
     // ダンジョンの生成
-    genDungeon(obj_tbl);
-    /*
+    //genDungeon(obj_tbl);
     for(y=0; y<FIELD_SZ; y++){
         for(x=0; x<FIELD_SZ; x++){
             if(y == 0 || y == FIELD_SZ-1 || x == 0 || x == FIELD_SZ-1)
@@ -194,7 +194,6 @@ void initField(){
                 obj_tbl[y][x] = ID_PASSAGE;
         }
     }
-    */
 
     // ゴールの設置
     do{
@@ -412,6 +411,7 @@ void timer_1sec_comp(){
 // 敵の設置
 void bornMob(uchar x, uchar y){
     mob.active = MOB_IDLE;
+    mob.knockback = FALSE;
     mob.attack = MOB_ATACK;
     mob.x = x;
     mob.y = y;
@@ -473,6 +473,7 @@ void hitMob(uchar x, uchar y, uchar val){
         deadMob(&mob);
     }else{
         mob.hp -= val;
+        mob.knockback = KNOCKBACK;
     }
 }
 
@@ -548,24 +549,28 @@ void mobMove(mob_t *m){
 
     // 移動可能のMOB
     if(0 < m->hp){
-        mobChangeDirection(m);
-        front = searchFront(m->x, m->y, m->dir);
-        if(front == ID_PASSAGE){
-            x = m->x;
-            y = m->y;
-            switch(m->dir){
-                case DIR_RIGHT: m->x++;  // 右
-                                break;
-                case DIR_UP: (m->y)++;     // 上
-                             break;
-                case DIR_LEFT: m->x--;   // 左
-                               break;
-                case DIR_DOWN: m->y--;   // 下
-                               break;
+        if(m->knockback == KNOCKBACK){  // ノックバックチェック
+            m->knockback = FALSE;
+        }else{
+            mobChangeDirection(m);
+            front = searchFront(m->x, m->y, m->dir);
+            if(front == ID_PASSAGE){
+                x = m->x;
+                y = m->y;
+                switch(m->dir){
+                    case DIR_RIGHT: m->x++;  // 右
+                                    break;
+                    case DIR_UP: (m->y)++;     // 上
+                                 break;
+                    case DIR_LEFT: m->x--;   // 左
+                                   break;
+                    case DIR_DOWN: m->y--;   // 下
+                                   break;
+                }
+                mvObject(x, y, m->x, m->y, m->obj_id);
+            }else if(front == ID_PLAYER){
+                mobAttack(*m);
             }
-            mvObject(x, y, m->x, m->y, m->obj_id);
-        }else if(front == ID_PLAYER){
-            mobAttack(*m);
         }
     }
 }

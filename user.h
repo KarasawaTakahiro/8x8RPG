@@ -33,8 +33,11 @@
 #define SW_2 2
 #define SW_3 3
 // 雑多定義
+#define FALSE 0
+#define TRUE 1
 #define MOVED 1
 #define UNMOVE 0
+#define KNOCKBACK 1
 typedef unsigned char uchar;    // 1byte
 typedef unsigned int  uint;     // 2byte
 //typedef unsigned long ulong;    // 4byte

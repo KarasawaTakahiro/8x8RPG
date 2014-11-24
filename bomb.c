@@ -33,6 +33,8 @@ void setBomb(){
 void explodeBomb(){
     signed char i, j, x, y;
 
+    melody("cdefgabCD\0");
+
     // 消滅処理
     bomb.set = FALSE;
     rmObject(bomb.x, bomb.y, bomb.obj_id);

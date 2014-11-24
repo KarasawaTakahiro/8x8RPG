@@ -18,6 +18,8 @@ static volatile uchar scan; // led走査
 static volatile uchar clk;  // 間引き
 static volatile uchar timer_1sec_counter = 0;
 static volatile uchar timer_1sec_count_f = FALSE;
+static void buzzer(uchar tone);
+static uchar tones[] = {238, 212, 189, 178, 158, 141, 216, 118, 105, 0};
 int seed;
 volatile uchar wait = 0;    // スイッチ変化時の待ち
 volatile uchar pre_sw;
@@ -42,7 +44,7 @@ ISR(TIMER0_COMPA_vect)
     scan = (scan + 1) & 7;
     sc = ~(1 << scan);
     PORTC = 0x30 | (sc & 0x0f); // sw1,2をプルアップ
-    PORTD = sc & 0xf0;
+    PORTD = sc & 0xf0 | 0x08;   // ブザーを有効
     PORTB = led[scan];
     if (++clk >= 50) {          // 100mSごとに起動
         clk = 0;
@@ -59,7 +61,7 @@ ISR(TIMER1_COMPA_vect){
 }
 */
 
-ISR(TIMER2_COMPA_vect){
+ISR(TIMER1_COMPA_vect){
     flash = flash ? 0 : 1;
 }
 
@@ -88,7 +90,7 @@ int main(void)
     DDRD = 0xfa;
     PORTB = 0x00;
     PORTC = 0x00;
-    PORTD = 0x00;
+    PORTD = 0x08;
     // ポートCのピン変化割り込みを有効
     PCICR = _BV(PCIE1);
     // 割り込みを認めるビット位置を指定する
@@ -99,24 +101,19 @@ int main(void)
     TCCR0A = 2;
     TCCR0B = 3;                 // 1/64
     TIMSK0 |= (1 << OCIE0A);    // 割り込み設定
-    // 汎用１secタイマ
-    /*
-    OCR1A = 7812;
-    TCCR1A = 0x00;
-    TCCR1B = 0x08;              // CTC
-    TIMSK1 |= (1 << OCIE1A);    // 割り込み設定
-    */
     // LED点滅用タイマ
-    OCR2A = 20;                 // LED
-    OCR2B = 0;                  // sound
-    //TCCR2A = 0xa1;            // PWM COMA,B
-    TCCR2A = 0x02;              // CTC COMA,B
-    TCCR2B = 0x04;              // 1/64
-    TIMSK2 |= (1 << OCIE2A);
+    OCR1A = 20;                 // LED
+    TCCR1A = 0x02;              // CTC COMA,B
+    TCCR1B = 0x02;              // 1/64
+    TIMSK1 |= (1 << OCIE1A);
+    // サウンド
+    TCCR2A = 0x12;
+    //TCCR2B = 0x44;              // CTC 1/64
     // A/D
-    wdt_enable(WDTO_2S);
     ADMUX = 0x45;
     ADCSRA = (_BV(ADEN) | 0b110);
+
+    wdt_enable(WDTO_2S);
 
     UCSR0B = 0;
     UCSR0C = 0x06;
@@ -142,14 +139,35 @@ int main(void)
     return 0;
 }
 
-// ブザー開始
-void _sound(uchar tone)
-{
+void melody(char *score){
+    uchar i, t;
 
-    /*
-    OCR2A = tone == BEEP_LOW ? 169 : 42;
-    TCCR2A = 0x12;
-    */
+    for(i=0; score[i] != '\0'; i++){
+        sprintf(s, "%c", score[i]);_puts(s);
+        switch(score[i]){
+            case 'c': t = 0; break;
+            case 'd': t = 1; break;
+            case 'e': t = 2; break;
+            case 'f': t = 3; break;
+            case 'g': t = 4; break;
+            case 'a': t = 5; break;
+            case 'b': t = 6; break;
+            case 'C': t = 7; break;
+            case 'D': t = 8; break;
+            default:  t = 9; break;
+        }
+        buzzer(tones[t]);
+        _wdt_reset();
+    }
+}
+
+// ブザー開始
+static void buzzer(uchar tone) {
+    TCNT2 = 0;
+    OCR2A = tone;
+    TCCR2B |= 0x04;
+    _delay_ms(400);
+    TCCR2B &= 0xf8;
 }
 
 void timer_1sec_start(){

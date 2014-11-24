@@ -9,6 +9,7 @@ typedef struct player_s{
     uchar x;
     uchar y;
     uchar hp;
+    uchar attack;
     uchar obj_id;
 }player_t;
 
@@ -124,10 +125,17 @@ static void MoveBullet(void)
     プレイヤーの行動
  */
 static void MoveFort(void) {
+    uchar front, fx, fy;
+
     switch(sw){
         case 1:
-            if(searchFront(player.x, player.y, player.dir) == ID_PASSAGE)
+            front = searchFront(player.x, player.y, player.dir);
+            if(front ==  ID_PASSAGE){
                 walk();
+            }else if(front == ID_MOB){
+                getFrontCoord(player.x, player.y, player.dir, &fx, &fy);
+                damage(fx, fy, player.attack);
+            }
             playerMove_f = MOVED;
             break;
         case 2:
@@ -404,6 +412,7 @@ void initPlayer(){
 
     player.x = x;
     player.y = y;
+    player.attack = PLAYER_ATTACK;
     player.dir = DIR_RIGHT;
     player.hp = PLAYER_MAX_HP;
     player.obj_id = ID_PLAYER;

@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include "user.h"
 #include "dungeon_gen.h"
 
 int seed;
@@ -67,7 +66,7 @@ uchar checkdig(uchar map[FIELD_SZ][FIELD_SZ], uchar x, uchar y, uchar dir){
     return 0;
 }
 
-void dig(uchar map[FIELD_SZ][FIELD_SZ], uchar* x, uchar* y, uchar dir, int* plen, uchar max[2], uchar min[2]){
+void dig(uchar map[FIELD_SZ][FIELD_SZ], uchar* x, uchar* y, uchar dir, uint* plen, uchar max[2], uchar min[2]){
 
     switch(dir){
         case 0: map[*y][++(*x)] = ID_PASSAGE; break;

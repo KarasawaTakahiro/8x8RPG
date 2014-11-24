@@ -1,22 +1,13 @@
 #include <stdlib.h>
 #include "user.h"
-#include "dungeon_gen.h"
-#include "structs.h"
-#include "constants.h"
 
-uchar pre_sw;
-
-// ローカル関数
-static void MoveEnemy(void);
-static void MoveBullet(void);
-static void MoveFort(void);
-static void UpdateLED(void);
 // グローバル変数
 volatile uchar sw = 0;      // 押しボタン
 volatile uchar led[LED_SZ]; // マトリクスLED
 volatile uchar gameover = 0;// ゲーム終了フラグ
 volatile uchar flash = 0;
 int seed;
+
 // ローカル変数
 volatile uint field[FIELD_SZ] = {0};
 uchar obj_tbl[FIELD_SZ][FIELD_SZ] = {{0}};
@@ -25,34 +16,13 @@ volatile uchar marker_f;
 volatile bomb_t bomb;
 mob_t mob;
 volatile uchar playerMove_f;
+uchar pre_sw;
 
+// デバッグ変数
 volatile uchar print = 0x00;
 volatile uchar print1 = 0x00;
 volatile uchar print2 = 0x00;
 
-// プロトタイプ
-void initField(void);
-void changeDirection(void);
-uchar searchFront(uchar, uchar, uchar);
-void walk(void);
-void showMarker(void);
-void showDungeon(void);
-void getFrontCoord(uchar, uchar, uchar, uchar*, uchar*);
-void setObject(uchar, uchar, uchar);
-void setBomb(void);
-void convObjToField(void);
-void bornMob(uchar, uchar);
-void initPlayer();
-void damage(uchar, uchar, uchar);
-void hitPassage(uchar, uchar, uchar);
-void hitMob(uchar, uchar, uchar);
-void hitPlayer(uchar);
-void deadMob(mob_t*);
-void initBomb(void);
-void mobMove(mob_t*);
-void clearObjTbl(void);
-void mvObject(uchar src_x, uchar src_y, uchar dist_x, uchar dist_y, uchar obj_id);
-void goalPlayer();
 
 /*
     フレームワークから呼ばれる関数群
@@ -82,30 +52,16 @@ void user_init(void)
 void user_main(void)
 {
     playerMove_f = UNMOVE;   // プレイヤーの行動フラグをリセット
-    MoveEnemy();
-    MoveBullet();
-    MoveFort();
+    playerMove();
     if(playerMove_f == MOVED)
         mobMove(&mob);
-    UpdateLED();
-}
-/*
-    敵の移動
- */
-static void MoveEnemy(void)
-{
-}
-/*
-    弾の移動
- */
-static void MoveBullet(void)
-{
+    updateLed();
 }
 
 /*
     プレイヤーの行動
  */
-static void MoveFort(void) {
+static void playerMove(void) {
     uchar front, fx, fy;
 
     if(pre_sw != sw){
@@ -139,7 +95,7 @@ static void MoveFort(void) {
 /*
     LED表示の更新
  */
-static void UpdateLED(void)
+static void updateLed(void)
 {
     showDungeon();
     led[3] |= 0x10; // プレイヤーの位置

@@ -55,3 +55,4 @@
 #define UNMOVE      0       // 行動前
 #define KNOCKBACK   1       // ノックバックフラグ
 
+#define INCLUDED_CONSTANTS

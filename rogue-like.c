@@ -3,7 +3,7 @@
 #include <avr/wdt.h>
 #include <util/delay.h>
 #include <stdlib.h>
-#include "user.h"
+#include "common.h"
 
 #define SW ((~PINC >> 4) & 3)
 #define SW_COUNT 30

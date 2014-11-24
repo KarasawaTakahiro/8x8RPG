@@ -35,3 +35,4 @@ typedef struct bomb_s{
     uchar set;          // 設置済みか
 } bomb_t;
 
+#define INCLUDED_STRUCTS

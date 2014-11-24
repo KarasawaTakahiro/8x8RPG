@@ -63,8 +63,9 @@ uchar getBranchPoint(uchar max, uchar min){
     uchar res;
 
     do{
+        _wdt_reset();
         res = (rand() + min) % max;     // 範囲内でランダムな点を探す
-    }while(res != 0);
+    }while(res != 0 && res != 1);       // どちらも最外壁を指してしまうので不可
     if(res % 2) res = res + 1 % 2;      // 奇数の時
 
     return res;
@@ -88,33 +89,33 @@ void findBranchPoint(uchar map[FIELD_SZ][FIELD_SZ], uchar *x, uchar *y, uchar ma
 
 uchar checkdig(uchar map[FIELD_SZ][FIELD_SZ], uchar x, uchar y, uchar dir){
     switch(dir){
-        case 0:
-            if(map[y][x+2] == ID_WALL && x+1 < FIELD_SZ-1)
-                return 1;
+        case DIR_RIGHT:
+            if(x+2 <= FIELD_SZ && map[y][x+2] == ID_WALL && x+1 < FIELD_SZ-1)
+                return TRUE;
             break;
-        case 1:
-            if(map[y+2][x] == ID_WALL && y+1 < FIELD_SZ-1)
-                return 1;
+        case DIR_UP:
+            if(y+2 <= FIELD_SZ && map[y+2][x] == ID_WALL && y+1 < FIELD_SZ-1)
+                return TRUE;
             break;
-        case 2:
-            if(map[y][x-2] == ID_WALL && 0 < x-1)
-                return 1;
+        case DIR_LEFT:
+            if(0 <= x-2 && map[y][x-2] == ID_WALL && 0 < x-1)
+                return TRUE;
             break;
-        case 3:
-            if(map[y-2][x] == ID_WALL && 0 < y-1)
-                return 1;
+        case DIR_DOWN:
+            if(0 <= y-2 && map[y-2][x] == ID_WALL && 0 < y-1)
+                return TRUE;
             break;
     }
-    return 0;
+    return FALSE;
 }
 
 void dig(uchar map[FIELD_SZ][FIELD_SZ], uchar* x, uchar* y, uchar dir, uint* plen, uchar max[2], uchar min[2]){
 
     switch(dir){
-        case 0: map[*y][++(*x)] = ID_PASSAGE; break;
-        case 1: map[++(*y)][*x] = ID_PASSAGE; break;
-        case 2: map[*y][--(*x)] = ID_PASSAGE; break;
-        case 3: map[--(*y)][*x] = ID_PASSAGE; break;
+        case DIR_RIGHT: map[*y][++(*x)] = ID_PASSAGE; break;
+        case DIR_UP:    map[++(*y)][*x] = ID_PASSAGE; break;
+        case DIR_LEFT:  map[*y][--(*x)] = ID_PASSAGE; break;
+        case DIR_DOWN:  map[--(*y)][*x] = ID_PASSAGE; break;
     }
     (*plen)++;
     updateRange(*x, *y, max, min);
@@ -135,15 +136,16 @@ void genDungeon(uchar map[FIELD_SZ][FIELD_SZ]){
         }
     }
 
-    x = (rand() + 1) % FIELD_SZ;
-    y = (rand() + 1) % FIELD_SZ;
+    x = rand() % (FIELD_SZ-1) + 1;
+    y = rand() % (FIELD_SZ-1) + 1;
 
-    map[y][x] = 0;
+    map[y][x] = ID_PASSAGE;
     plen ++;
     max[0] = min[0] = x;
     max[1] = min[1] = y;
 
     while(plen <= max_plen){
+        _wdt_reset();
         if(scanAround(map, x, y)){
             dir = nextDir();
             if(checkdig(map, x, y, dir)){

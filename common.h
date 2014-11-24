@@ -4,6 +4,8 @@
 */
 #define INCLUDED_COMMON
 
+#include <stdio.h>
+
 #ifndef INCLUDED_CONATANTS
 #include "constants.h"
 #endif
@@ -27,3 +29,4 @@ extern void timer_1sec_stop(void);  // 1秒タイマ 停止
 extern void _wdt_reset(void);
 
 extern void _puts(char*);
+extern char s[100];

@@ -11,6 +11,7 @@ volatile uchar led[LED_SZ];         // マトリクスLED
 volatile uchar gameover = 0;        // ゲーム終了フラグ
 volatile uchar flash = 0;           // LED点滅用変数
 int seed;                           // SEED値
+char s[100];
 
 // ローカル変数
 uint field[FIELD_SZ];               // フィールド
@@ -88,20 +89,25 @@ void timer_1sec_comp(){
 
 // フィールドの初期化
 void initField(){
-    uchar x, y;
+    signed char y;
+    uchar x;
 
     genDungeon(obj_tbl);        // ダンジョンの生成
 
-    /*
-    for(y=0; y<FIELD_SZ; y++){
+    _puts("\n");
+    for(y=FIELD_SZ-1; 0<=y; y--){
         for(x=0; x<FIELD_SZ; x++){
+            /*
             if(y == 0 || y == FIELD_SZ-1 || x == 0 || x == FIELD_SZ-1)
                 obj_tbl[y][x] = ID_WALL;
             else
                 obj_tbl[y][x] = ID_PASSAGE;
+                */
+            sprintf(s, "%s", obj_tbl[y][x] == ID_WALL ? "W" : "_");_puts(s);
         }
+        _puts("\n");
     }
-    */
+    _puts("\n");
 
     // ゴールの設置 フィールド内のランダムなID_PASSAGEをゴールにする
     do{

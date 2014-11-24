@@ -15,6 +15,7 @@
 #endif
 
 #include "player.h"
+#include "mob.h"
 
 // プロトタイプ
 void playerMove(void);
@@ -28,18 +29,16 @@ void getFrontCoord(uchar, uchar, uchar, uchar*, uchar*);
 void setObject(uchar, uchar, uchar);
 void setBomb(void);
 void convObjToField(void);
-void bornMob(uchar, uchar);
 void damage(uchar, uchar, uchar);
 void hitPassage(uchar, uchar, uchar);
-void hitMob(uchar, uchar, uchar);
-void deadMob(mob_t*);
 void initBomb(void);
-void mobMove(mob_t*);
 void clearObjTbl(void);
-void mvObject(uchar src_x, uchar src_y, uchar dist_x, uchar dist_y, uchar obj_id);
+void mvObject(uchar, uchar, uchar, uchar, uchar);
+uchar rmObject(uchar, uchar, uchar);
 
 // 共通変数
 extern uchar obj_tbl[FIELD_SZ][FIELD_SZ];
 extern volatile player_t player;
 extern volatile uchar marker_f;
 extern volatile uchar playerMove_f;
+extern mob_t mob;

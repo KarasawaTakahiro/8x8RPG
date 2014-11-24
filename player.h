@@ -4,9 +4,6 @@
 #ifndef INCLUDED_STRUCTS
 #include "structs.h"
 #endif
-//#ifndef INCLUDED_COMMON_GAME
-//#include "common_game.h"
-//#endif
 #ifndef INCLUDED_USER
 #include "user.h"
 #endif

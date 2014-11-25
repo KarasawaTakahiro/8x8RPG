@@ -38,6 +38,8 @@ void goalPlayer(){
     uchar max = player.max_hp;                      // 現在の最大HPを記憶
     uchar cur = player.hp;                          // 現在のHPを記憶
 
+    melody("ffffre-rgr-f2f4");
+
     user_init();                                    // ゲームを初期化
 
     // プレイヤーの最大HPと現在のHPを+1
@@ -56,6 +58,7 @@ void hitPlayer(uchar val){
     if(player.hp <= val){           // ダメージが現在HP以上
         player.hp = 0;              // HPを0に
         gameover = TRUE;            // ゲームオーバーフラグをON
+        melody("cb>b<a#cb>b<a#cb>b<a#cb>b<a#e8.c40b40>a#8.");
     }else{
         player.hp -= val;           // HPをマイナス
     }

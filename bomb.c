@@ -1,4 +1,12 @@
-// bomb.c
+/**************************************************************************
+    Copyright(c) 2014 KarasawaTakahiro, Kanazawa Institute of Technology
+
+    ローグライクゲーム
+    3EP1-12 唐澤貴大 金沢工業大学 工学部 情報工学科
+    ver 0.1, 2014/11/26
+    bomb.c
+**************************************************************************/
+
 /*
     爆弾に関する定義
 */
@@ -18,7 +26,7 @@ void setBomb(){
     uchar fx, fy;
 
     // 爆弾を未設置 && 前方の確認
-    if(bomb.set == FALSE && searchFront(player.x, player.y, player.dir) == ID_PASSAGE){   
+    if(bomb.set == FALSE && searchFront(player.x, player.y, player.dir) == ID_PASSAGE){
         getFrontCoord(player.x, player.y, player.dir, &fx, &fy);
         bomb.timelimit = BOMB_TIMELIMIT;    // タイムリミットをセット
         setObject(fx, fy, bomb.obj_id);     // 爆弾を設置

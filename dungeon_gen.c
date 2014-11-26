@@ -1,3 +1,12 @@
+/**************************************************************************
+    Copyright(c) 2014 KarasawaTakahiro, Kanazawa Institute of Technology
+
+    ローグライクゲーム
+    3EP1-12 唐澤貴大 金沢工業大学 工学部 情報工学科
+    ver 0.1, 2014/11/26
+    dungeon_gen.h
+**************************************************************************/
+
 #include <stdlib.h>
 #include "dungeon_gen.h"
 
@@ -87,6 +96,16 @@ void findBranchPoint(uchar map[FIELD_SZ][FIELD_SZ], uchar *x, uchar *y, uchar ma
     }while(map[*x][*y] == ID_PASSAGE);
 }
 
+/* 
+    指定の方向に進めていいかを判断
+
+    map : フィールド
+    x   : X座標
+    y   : Y座標
+    dir : 方向
+
+    return  : 良い/だめ TRUE/FALSE
+*/
 uchar checkdig(uchar map[FIELD_SZ][FIELD_SZ], uchar x, uchar y, uchar dir){
     switch(dir){
         case DIR_RIGHT:
@@ -109,6 +128,16 @@ uchar checkdig(uchar map[FIELD_SZ][FIELD_SZ], uchar x, uchar y, uchar dir){
     return FALSE;
 }
 
+/*
+    ダンジョンをすすめる
+
+    map :
+    x   : 現在座標X
+    y   : 現在座標Y
+    plen: ダンジョンの進めた長さ
+    max : 最大値 [x, y]
+    min : 最小値 [x, y]
+*/
 void dig(uchar map[FIELD_SZ][FIELD_SZ], uchar* x, uchar* y, uchar dir, uint* plen, uchar max[2], uchar min[2]){
 
     switch(dir){
@@ -121,6 +150,11 @@ void dig(uchar map[FIELD_SZ][FIELD_SZ], uchar* x, uchar* y, uchar dir, uint* ple
     updateRange(*x, *y, max, min);
 }
 
+/*
+    ダンジョン生成
+    
+    map : フィールドデータ
+*/
 void genDungeon(uchar map[FIELD_SZ][FIELD_SZ]){
     uchar dir, x, y;
     uint plen = 0;
@@ -136,24 +170,23 @@ void genDungeon(uchar map[FIELD_SZ][FIELD_SZ]){
         }
     }
 
-    x = rand() % (FIELD_SZ-1) + 1;
+    x = rand() % (FIELD_SZ-1) + 1;      // 初期ポイントを設定
     y = rand() % (FIELD_SZ-1) + 1;
-
-    map[y][x] = ID_PASSAGE;
+    map[y][x] = ID_PASSAGE;             // 通路にする
     plen ++;
-    max[0] = min[0] = x;
-    max[1] = min[1] = y;
+    max[0] = min[0] = x;                // 範囲を更新
+    max[1] = min[1] = y;                // 範囲を更新
 
+    // 生成する
     while(plen <= max_plen){
         _wdt_reset();
-        if(scanAround(map, x, y)){
+        if(scanAround(map, x, y)){      // 周りに進められるところがあるか
             dir = nextDir();
-            if(checkdig(map, x, y, dir)){
-                dig(map, &x, &y, dir, &plen, max, min);
+            if(checkdig(map, x, y, dir)){   // その方向に進められるか
+                dig(map, &x, &y, dir, &plen, max, min);     // 進める
             }
-
-        }else{
-            findBranchPoint(map, &x, &y, max, min);
+        }else{                          // ない
+            findBranchPoint(map, &x, &y, max, min);     // 分岐点を決定
         }
 
     }

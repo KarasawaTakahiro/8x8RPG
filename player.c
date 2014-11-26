@@ -1,3 +1,12 @@
+/**************************************************************************
+    Copyright(c) 2014 KarasawaTakahiro, Kanazawa Institute of Technology
+
+    ローグライクゲーム
+    3EP1-12 唐澤貴大 金沢工業大学 工学部 情報工学科
+    ver 0.1, 2014/11/26
+    player.c
+**************************************************************************/
+
 #include <stdlib.h>
 #include "player.h"
 
@@ -39,8 +48,6 @@ void goalPlayer(){
     uchar cur = player.hp;                          // 現在のHPを記憶
 
     se(SE_TYPE_HIGH); se(SE_TYPE_BASIC);
-    se(SE_TYPE_HIGH); se(SE_TYPE_BASIC);
-    se(SE_TYPE_HIGH); se(SE_TYPE_BASIC);
 
     user_init();                                    // ゲームを初期化
 
@@ -60,10 +67,10 @@ void hitPlayer(uchar val){
     if(player.hp <= val){           // ダメージが現在HP以上
         player.hp = 0;              // HPを0に
         gameover = TRUE;            // ゲームオーバーフラグをON
-        se(SE_TYPE_BASIC);
-        se(SE_TYPE_BASIC);
     }else{
         player.hp -= val;           // HPをマイナス
+        se(SE_TYPE_HIGH);
+        se(SE_TYPE_BASIC);
     }
 }
 

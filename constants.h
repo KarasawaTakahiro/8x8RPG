@@ -1,3 +1,12 @@
+/**************************************************************************
+    Copyright(c) 2014 KarasawaTakahiro, Kanazawa Institute of Technology
+
+    ローグライクゲーム
+    3EP1-12 唐澤貴大 金沢工業大学 工学部 情報工学科
+    ver 0.1, 2014/11/26
+    constants.h
+**************************************************************************/
+
 /*
     定数群
 */
@@ -56,7 +65,7 @@
 #define SE_TYPE_LOW     3
 #define SE_TYPE_MIDLE   4
 
-// SE設定
+// SE設定 周波数
 #define SE_BASIC    150
 #define SE_HIGH     100
 #define SE_LOW      200

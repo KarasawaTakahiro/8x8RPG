@@ -38,7 +38,9 @@ void goalPlayer(){
     uchar max = player.max_hp;                      // 現在の最大HPを記憶
     uchar cur = player.hp;                          // 現在のHPを記憶
 
-    melody("ffffre-rgr-f2f4");
+    se(SE_TYPE_HIGH); se(SE_TYPE_BASIC);
+    se(SE_TYPE_HIGH); se(SE_TYPE_BASIC);
+    se(SE_TYPE_HIGH); se(SE_TYPE_BASIC);
 
     user_init();                                    // ゲームを初期化
 
@@ -58,7 +60,7 @@ void hitPlayer(uchar val){
     if(player.hp <= val){           // ダメージが現在HP以上
         player.hp = 0;              // HPを0に
         gameover = TRUE;            // ゲームオーバーフラグをON
-        melody("cb>b<a#cb>b<a#cb>b<a#cb>b<a#e8.c40b40>a#8.");
+        se(SE_TYPE_BASIC);
     }else{
         player.hp -= val;           // HPをマイナス
     }
@@ -101,6 +103,7 @@ void playerMove(void) {
             }else if(front == ID_MOB){  // 敵
                 getFrontCoord(player.x, player.y, player.dir, &fx, &fy);
                 damage(fx, fy, player.attack);
+                se(SE_TYPE_HIGH);
             }else if(front == ID_GOAL){ // ゴール
                 goalPlayer();
             }

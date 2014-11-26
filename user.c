@@ -23,12 +23,6 @@ uchar playerMove_f;                 // プレイヤーが行動したかを表�
 mob_t mob[MOB_BORN_NUM];            // 敵キャラ
 uchar pre_sw;                       // SWの押しっぱなしを無効にするための変数
 
-// デバッグ変数
-volatile uchar print = 0x00;
-volatile uchar print1 = 0x00;
-volatile uchar print2 = 0x00;
-
-
 /**************************************
     フレームワークから呼ばれる関数群
 **************************************/
@@ -46,6 +40,8 @@ void user_init(void)
     initField();                // フィールド生成
     initPlayer();               // プレイヤーを初期化
     bornMob();                  // MOBの設置
+
+    se(SE_TYPE_HIGH);
 }
 
 // ゲームのメイン処理
@@ -97,12 +93,6 @@ void initField(){
     _puts("\n");
     for(y=FIELD_SZ-1; 0<=y; y--){
         for(x=0; x<FIELD_SZ; x++){
-            /*
-            if(y == 0 || y == FIELD_SZ-1 || x == 0 || x == FIELD_SZ-1)
-                obj_tbl[y][x] = ID_WALL;
-            else
-                obj_tbl[y][x] = ID_PASSAGE;
-                */
             sprintf(s, "%s", obj_tbl[y][x] == ID_WALL ? "W" : "_");_puts(s);
         }
         _puts("\n");

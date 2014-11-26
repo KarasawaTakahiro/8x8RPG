@@ -1,6 +1,7 @@
 /*
     定数群
 */
+#define INCLUDED_CONSTANTS
 
 // 8x8LEDに関する定義
 #define LED_SZ 8                // 8x8LED
@@ -49,6 +50,18 @@
 #define SW_2 2              // 値
 #define SW_3 3              // 値
 
+// SEタイプ
+#define SE_TYPE_BASIC   1
+#define SE_TYPE_HIGH    2
+#define SE_TYPE_LOW     3
+#define SE_TYPE_MIDLE   4
+
+// SE設定
+#define SE_BASIC    150
+#define SE_HIGH     100
+#define SE_LOW      200
+#define SE_MIDLE    175
+
 // 雑多定義
 #define FALSE       0       // 偽
 #define TRUE        1       // 真
@@ -56,4 +69,3 @@
 #define UNMOVE      0       // 行動前
 #define KNOCKBACK   1       // ノックバックフラグ
 
-#define INCLUDED_CONSTANTS

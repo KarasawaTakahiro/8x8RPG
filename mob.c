@@ -111,6 +111,8 @@ void deadMob(mob_t* m){
     m->active = UNMOVE;
     m->hp = 0;
     rmObject(m->x, m->y, ID_MOB);
+    se(SE_TYPE_LOW);
+    se(SE_TYPE_LOW);
 }
 
 // Mobへのダメージ

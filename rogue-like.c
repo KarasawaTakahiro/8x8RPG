@@ -18,13 +18,6 @@ static volatile uchar scan; // led走査
 static volatile uchar clk;  // 間引き
 static volatile uchar timer_1sec_counter = 0;
 static volatile uchar timer_1sec_count_f = FALSE;
-static uchar tones[5][11] = {
-    {476, 449, 424, 400, 378, 356, 336, 317, 299, 283, 252},
-    {237, 224, 211, 199, 188, 177, 167, 158, 149, 141, 125},
-    {118, 111, 105, 99, 93, 88, 83, 78, 74, 70, 62},
-    {58, 55, 52, 49, 46, 43, 41, 38, 36, 34, 30},
-    {28, 27, 25, 24, 22, 21, 20, 18, 17, 16, 14},
-};
 int seed;
 volatile uchar wait = 0;    // スイッチ変化時の待ち
 volatile uchar pre_sw;
@@ -32,8 +25,7 @@ volatile uchar pre_sw;
 char s[100];
 
 void sw_update();
-static void buzzer(uchar tone, uchar len);
-static uchar parseInt(char* s, uchar pos, uchar* res);
+static void buzzer(uchar tone);
 
 ISR(PCINT1_vect){
     if(wait == 0){
@@ -61,12 +53,6 @@ ISR(TIMER0_COMPA_vect)
         }
     }
 }
-
-/*
-ISR(TIMER1_COMPA_vect){
-    timer_1sec_comp();
-}
-*/
 
 ISR(TIMER1_COMPA_vect){
     flash = flash ? 0 : 1;
@@ -128,10 +114,11 @@ int main(void)
     UCSR0B = _BV(TXEN0);
 
     // ゲーム初期化
+    sei();
     setSeed();
     pre_sw = sw = SW;
     user_init();
-    sei();
+    se(SE_TYPE_HIGH); se(SE_TYPE_HIGH);     // 開始音
     for (;;) {
         wdt_reset();
         sw_update();
@@ -140,6 +127,9 @@ int main(void)
             timer_1sec_counter = 0;
         }
         if(gameover){
+            se(SE_TYPE_LOW); se(SE_TYPE_BASIC);
+            se(SE_TYPE_LOW); se(SE_TYPE_BASIC);
+            se(SE_TYPE_LOW); se(SE_TYPE_BASIC);
             user_init();
         }
     }
@@ -195,51 +185,9 @@ void _wdt_reset(){
     wdt_reset();
 }
 
-void melody(char *score){
-    uchar i, t=4, oct=4, len=200;
-    uchar bu;
-
-    for(i=0; score[i] != '\0'; i++){
-        if('a' <= score[i] && score[i] <= 'g'){
-            switch(score[i]){
-                case 'c': t = 0; break;
-                case 'd': t = 2; break;
-                case 'e': t = 4; break;
-                case 'f': t = 5; break;
-                case 'g': t = 7; break;
-                case 'a': t = 9; break;
-                case 'b': t = 11; break;
-            }
-        }else{
-            if('1' <= score[i] && score[i] <= '9'){
-                i += parseInt(score, i, &bu);
-                len /= bu;
-            }else{
-                switch(score[i]){
-                    case '#': t++; break;
-                    case '+': t++; break;
-                    case '-': t--; break;
-                    case '<': oct++; break;
-                    case '>': oct--; break;
-                    case '.':
-                              i += parseInt(score, i, &bu);
-                              len /= bu;
-                              break;
-                    defult: i++; break;
-                }
-            }
-        }
-        // 鳴らす
-        if(('a' <= score[i+1] && score[i+1] <= 'g') || score[i+1] == '\0'){
-            buzzer(tones[oct-3][t], len);
-            _wdt_reset();
-            t = 0; oct = 4; len = 200;
-        }
-    }
-}
 
 // ブザー開始
-static void buzzer(uchar tone, uchar len){
+static void buzzer(uchar tone){
     TCNT2 = 0;
     OCR2A = tone;
     TCCR2B |= 0x04;
@@ -247,25 +195,20 @@ static void buzzer(uchar tone, uchar len){
     TCCR2B &= 0xf8;
 }
 
-static uchar parseInt(char* s, uchar pos, uchar* res){
-    uchar i, j;
-    uchar tmp;
-    uchar n=1;        // 第n位
-    char tmps[2];
-    *res = 0;
-
-    for(i=0; ; i++){
-        tmps[0] = s[pos+i];
-        tmps[1] = '\0';
-        tmp = atoi(tmps);
-        if(tmp == 0) break;
-        for(j=1; j<n; j++){
-            (*res) *= 10;
-        }
-        (*res) += tmp;
-        n++;
+// 効果音を鳴らす
+void se(uchar pattern){
+    switch(pattern){
+        case SE_TYPE_BASIC:
+            buzzer(SE_BASIC);
+            break;
+        case SE_TYPE_HIGH:
+            buzzer(SE_HIGH);
+            break;
+        case SE_TYPE_LOW:
+            buzzer(SE_LOW);
+            break;
+        case SE_TYPE_MIDLE:
+            buzzer(SE_MIDLE);
+            break;
     }
-
-    return n;
 }
-

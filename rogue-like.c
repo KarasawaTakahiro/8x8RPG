@@ -18,6 +18,7 @@ static volatile uchar scan; // led走査
 static volatile uchar clk;  // 間引き
 static volatile uchar timer_1sec_counter = 0;
 static volatile uchar timer_1sec_count_f = FALSE;
+static volatile uchar buzzer_counter = FALSE;
 int seed;
 volatile uchar wait = 0;    // スイッチ変化時の待ち
 volatile uchar pre_sw;
@@ -26,6 +27,7 @@ char s[100];
 
 void sw_update();
 static void buzzer(uchar tone);
+static void stopBuzzer(void);
 
 ISR(PCINT1_vect){
     if(wait == 0){
@@ -48,9 +50,10 @@ ISR(TIMER0_COMPA_vect)
     if (++clk >= 50) {          // 100mSごとに起動
         clk = 0;
         user_main();
-        if(timer_1sec_count_f){
+        if(timer_1sec_count_f)
             timer_1sec_counter ++;
-        }
+        if(0 < buzzer_counter)
+            stopBuzzer();
     }
 }
 
@@ -191,8 +194,16 @@ static void buzzer(uchar tone){
     TCNT2 = 0;
     OCR2A = tone;
     TCCR2B |= 0x04;
-    _delay_ms(100);
-    TCCR2B &= 0xf8;
+    buzzer_counter = TRUE;
+}
+
+static void stopBuzzer(){
+    if(BZ_LENGTH < buzzer_counter){
+        TCCR2B &= 0xf8;
+        buzzer_counter = FALSE;
+    }else{
+        buzzer_counter ++;
+    }
 }
 
 // 効果音を鳴らす
@@ -212,3 +223,4 @@ void se(uchar pattern){
             break;
     }
 }
+

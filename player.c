@@ -61,6 +61,7 @@ void hitPlayer(uchar val){
         player.hp = 0;              // HPを0に
         gameover = TRUE;            // ゲームオーバーフラグをON
         se(SE_TYPE_BASIC);
+        se(SE_TYPE_BASIC);
     }else{
         player.hp -= val;           // HPをマイナス
     }

@@ -68,4 +68,5 @@
 #define MOVED       1       // 行動済み
 #define UNMOVE      0       // 行動前
 #define KNOCKBACK   1       // ノックバックフラグ
+#define BZ_LENGTH   2       // BZ_LENGTH * 100ms
 
